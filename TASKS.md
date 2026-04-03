@@ -57,7 +57,7 @@ Validação de vars obrigatórias no startup
 
 
 FASE 2 — Autenticação
-🔲 F2-01 - Endpoint POST /auth/register
+✅ F2-01 - Endpoint POST /auth/register
 
 Validar email único
 Hash de senha com bcrypt
@@ -65,7 +65,7 @@ Criar usuário + portfolio padrão + dashboard padrão
 Enviar email de verificação (mock local)
 Retornar access_token + refresh_token
 
-🔲 F2-02 - Endpoint POST /auth/login
+✅ F2-02 - Endpoint POST /auth/login
 
 Validar credenciais
 Verificar se email foi verificado
@@ -73,51 +73,51 @@ Gerar JWT (access 15min + refresh 30 dias)
 Salvar refresh_token no banco
 Registrar last_login_at
 
-🔲 F2-03 - Endpoint POST /auth/refresh
+✅ F2-03 - Endpoint POST /auth/refresh
 
 Validar refresh_token
 Rotacionar token (revogar antigo, emitir novo)
 Retornar novo par de tokens
 
-🔲 F2-04 - Endpoint POST /auth/logout
+✅ F2-04 - Endpoint POST /auth/logout
 
 Revogar refresh_token
 Blacklist de JWT (Redis)
 
-🔲 F2-05 - Endpoint POST /auth/forgot-password
+✅ F2-05 - Endpoint POST /auth/forgot-password
 
 Gerar token de reset
 Enviar email (mock local)
 
-🔲 F2-06 - Endpoint POST /auth/reset-password
+✅ F2-06 - Endpoint POST /auth/reset-password
 
 Validar token
 Atualizar senha
 Revogar todos os refresh tokens do usuário
 
-🔲 F2-07 - Middleware de autenticação JWT
+✅ F2-07 - Middleware de autenticação JWT
 
 Extrair e validar JWT em todas as rotas protegidas
 Injetar user_id no contexto
 
-🔲 F2-08 - Tela Flutter: Splash Screen
+✅ F2-08 - Tela Flutter: Splash Screen
 
 Logo + loading
 Redireciona para login ou home conforme token
 
-🔲 F2-09 - Tela Flutter: Login
+✅ F2-09 - Tela Flutter: Login
 
 Form email + senha
 Link para cadastro e esqueci senha
 Feedback de erro
 
-🔲 F2-10 - Tela Flutter: Cadastro
+✅ F2-10 - Tela Flutter: Cadastro
 
 Form nome, email, senha, confirmação
 Validações client-side
 Redirect para onboarding
 
-🔲 F2-11 - Tela Flutter: Onboarding
+✅ F2-11 - Tela Flutter: Onboarding
 
 3 passos: criar primeira conta bancária, definir salário, escolher categorias
 Skip disponível
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 7 | 🔄 0 | 🔲 82 | ❌ 0
+Total: 89 tasks | ✅ 18 | 🔄 0 | 🔲 71 | ❌ 0

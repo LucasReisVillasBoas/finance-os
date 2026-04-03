@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
+	"github.com/financeos/api/internal/handler"
 	"github.com/financeos/api/pkg/cache"
 	"github.com/financeos/api/pkg/config"
 	"github.com/financeos/api/pkg/database"
@@ -68,26 +68,8 @@ func main() {
 	defer redisClient.Close()
 	log.Info("connected to Redis")
 
-	// Configure Gin
-	if cfg.App.Env == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	router := gin.New()
-	router.Use(gin.Recovery())
-
-	// Health check endpoint
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"service": "financeos-api",
-			"env":     cfg.App.Env,
-		})
-	})
-
-	// API v1 group — handlers will be registered here by feature modules
-	v1 := router.Group("/api/v1")
-	_ = v1 // will be used by handlers in subsequent tasks
+	// Setup router with all routes
+	router := handler.SetupRouter(cfg, db, redisClient, log)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.App.Port),

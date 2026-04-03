@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/screens/splash_screen.dart';
+import '../../features/auth/screens/login_screen.dart';
+import '../../features/auth/screens/register_screen.dart';
+import '../../features/auth/screens/onboarding_screen.dart';
+import '../../features/dashboard/screens/home_screen.dart';
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
+  return GoRouter(
+    initialLocation: '/',
+    redirect: (BuildContext context, GoRouterState state) {
+      final isAuthenticated = authState.user != null;
+      final isLoading = authState.isLoading;
+
+      // While checking auth, stay on splash
+      if (isLoading && state.matchedLocation == '/') {
+        return null;
+      }
+
+      final publicRoutes = ['/login', '/register', '/onboarding', '/'];
+
+      if (!isAuthenticated && !publicRoutes.contains(state.matchedLocation)) {
+        return '/login';
+      }
+
+      if (isAuthenticated && (state.matchedLocation == '/login' || state.matchedLocation == '/register')) {
+        return '/home';
+      }
+
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/home',
+        builder: (context, state) => const HomeScreen(),
+      ),
+    ],
+  );
+});
