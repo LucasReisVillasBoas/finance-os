@@ -49,6 +49,14 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	authUC := usecase.NewAuthUseCase(userRepo, rdb, cfg, logger)
 	authH := NewAuthHandler(authUC, logger)
 
+	accountRepo := repository.NewAccountRepository(db)
+	accountUC := usecase.NewAccountUseCase(accountRepo)
+	accountH := NewAccountHandler(accountUC, logger)
+
+	categoryRepo := repository.NewCategoryRepository(db)
+	categoryUC := usecase.NewCategoryUseCase(categoryRepo)
+	categoryH := NewCategoryHandler(categoryUC, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -62,11 +70,26 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		auth.POST("/reset-password", authH.ResetPassword)
 	}
 
-	// Protected auth routes
-	authProtected := v1.Group("/auth")
-	authProtected.Use(middleware.AuthMiddleware(cfg.JWT.Secret, rdb))
+	// Protected routes
+	protected := v1.Group("")
+	protected.Use(middleware.AuthMiddleware(cfg.JWT.Secret, rdb))
 	{
-		authProtected.POST("/logout", authH.Logout)
+		// Auth (protected)
+		protected.POST("/auth/logout", authH.Logout)
+
+		// Accounts
+		protected.GET("/accounts/summary", accountH.Summary)
+		protected.GET("/accounts", accountH.List)
+		protected.POST("/accounts", accountH.Create)
+		protected.GET("/accounts/:id", accountH.GetByID)
+		protected.PUT("/accounts/:id", accountH.Update)
+		protected.DELETE("/accounts/:id", accountH.Delete)
+
+		// Categories
+		protected.GET("/categories", categoryH.List)
+		protected.POST("/categories", categoryH.Create)
+		protected.PUT("/categories/:id", categoryH.Update)
+		protected.DELETE("/categories/:id", categoryH.Delete)
 	}
 
 	return router

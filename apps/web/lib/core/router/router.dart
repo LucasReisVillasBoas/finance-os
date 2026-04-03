@@ -8,6 +8,10 @@ import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/dashboard/screens/home_screen.dart';
+import '../../features/accounts/screens/accounts_screen.dart';
+import '../../features/accounts/screens/account_form_screen.dart';
+import '../../features/accounts/screens/account_detail_screen.dart';
+import '../../features/settings/screens/categories_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -55,6 +59,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      // Accounts
+      GoRoute(
+        path: '/accounts',
+        builder: (context, state) => const AccountsScreen(),
+      ),
+      GoRoute(
+        path: '/accounts/new',
+        builder: (context, state) => const AccountFormScreen(),
+      ),
+      GoRoute(
+        path: '/accounts/:id',
+        builder: (context, state) =>
+            AccountDetailScreen(accountId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/accounts/:id/edit',
+        builder: (context, state) =>
+            AccountFormScreen(accountId: state.pathParameters['id']),
+      ),
+      // Settings
+      GoRoute(
+        path: '/settings/categories',
+        builder: (context, state) => const CategoriesScreen(),
       ),
     ],
   );

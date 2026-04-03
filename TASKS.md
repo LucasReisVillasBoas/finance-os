@@ -124,7 +124,7 @@ Skip disponível
 
 
 FASE 3 — Contas Bancárias
-🔲 F3-01 - CRUD Accounts (API)
+✅ F3-01 - CRUD Accounts (API)
 
 GET /accounts — listar contas do usuário
 POST /accounts — criar conta
@@ -132,25 +132,25 @@ GET /accounts/:id — detalhe
 PUT /accounts/:id — editar
 DELETE /accounts/:id — desativar (soft delete)
 
-🔲 F3-02 - GET /accounts/summary
+✅ F3-02 - GET /accounts/summary
 
 Saldo total por conta
 Saldo líquido total (excluindo cartão de crédito)
 Patrimônio total
 
-🔲 F3-03 - Tela Flutter: Lista de Contas
+✅ F3-03 - Tela Flutter: Lista de Contas
 
 Cards por conta com saldo atual
 Saldo total no topo
 FAB para adicionar
 
-🔲 F3-04 - Tela Flutter: Criar/Editar Conta
+✅ F3-04 - Tela Flutter: Criar/Editar Conta
 
 Tipo de conta (banco, cartão, carteira, etc.)
 Nome, instituição, cor, ícone
 Saldo inicial
 
-🔲 F3-05 - Tela Flutter: Detalhe da Conta
+✅ F3-05 - Tela Flutter: Detalhe da Conta
 
 Saldo atual + histórico de variação
 Últimas transações da conta
@@ -158,14 +158,14 @@ Opção de editar/desativar
 
 
 FASE 4 — Categorias
-🔲 F4-01 - CRUD Categories (API)
+✅ F4-01 - CRUD Categories (API)
 
 GET /categories — listar (sistema + usuário)
 POST /categories — criar customizada
 PUT /categories/:id — editar (apenas as do usuário)
 DELETE /categories/:id — desativar
 
-🔲 F4-02 - Tela Flutter: Gerenciar Categorias
+✅ F4-02 - Tela Flutter: Gerenciar Categorias
 
 Lista separada por tipo (receita/despesa)
 Indicador "padrão do sistema" vs "personalizada"
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 18 | 🔄 0 | 🔲 71 | ❌ 0
+Total: 89 tasks | ✅ 25 | 🔄 0 | 🔲 64 | ❌ 0
