@@ -1,0 +1,49 @@
+# Air configuration for hot reload
+# https://github.com/air-verse/air
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Command to build the binary
+  cmd = "go build -o ./tmp/main ./cmd/server"
+  # Binary to run after build
+  bin = "./tmp/main"
+  # Watch these file extensions
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  # Exclude these directories
+  exclude_dir = ["assets", "tmp", "vendor", "bin"]
+  # Exclude these files
+  exclude_file = []
+  # Exclude unchanged files
+  exclude_unchanged = true
+  # Follow symlinks
+  follow_symlink = true
+  # Kill delay before restart
+  kill_delay = "0s"
+  # Send interrupt signal before kill
+  send_interrupt = false
+  # Delay after which the build is started again
+  delay = 1000 # ms
+  # Log file for build errors
+  log = "build-errors.log"
+  # Rerun when build fails
+  rerun = false
+  # Stop running binary on build error
+  stop_on_error = true
+
+[log]
+  # Show timestamp in logs
+  time = true
+  # Main log color
+  main_only = false
+
+[color]
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+[misc]
+  # Delete tmp directory on exit
+  clean_on_exit = true

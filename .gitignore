@@ -1,0 +1,15 @@
+.env
+.env.local
+*.log
+node_modules/
+build/
+dist/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+apps/web/.dart_tool/
+apps/web/build/
+apps/api/bin/
+apps/api/tmp/
+*.swp
+.DS_Store
