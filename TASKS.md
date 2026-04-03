@@ -173,7 +173,7 @@ Criar nova com nome, ícone, cor
 
 
 FASE 5 — Transações
-🔲 F5-01 - CRUD Transactions (API)
+✅ F5-01 - CRUD Transactions (API)
 
 GET /transactions — listar com filtros (data, categoria, conta, tipo)
 POST /transactions — criar
@@ -181,37 +181,37 @@ GET /transactions/:id — detalhe
 PUT /transactions/:id — editar
 DELETE /transactions/:id — excluir
 
-🔲 F5-02 - GET /transactions/summary
+✅ F5-02 - GET /transactions/summary
 
 Total receitas / despesas / saldo no período
 Agrupado por categoria
 Comparativo com período anterior
 
-🔲 F5-03 - Endpoint para transferência entre contas
+✅ F5-03 - Endpoint para transferência entre contas
 
 POST /transactions/transfer
 Cria 2 transações vinculadas (transfer_pair_id)
 Debita conta origem, credita conta destino
 
-🔲 F5-04 - Tela Flutter: Lista de Transações
+✅ F5-04 - Tela Flutter: Lista de Transações
 
 Lista paginada com filtros
 Agrupada por data
 Indicador de tipo com cor
 
-🔲 F5-05 - Tela Flutter: Criar Transação
+✅ F5-05 - Tela Flutter: Criar Transação
 
 Tipo (receita/despesa/transferência)
 Valor com teclado numérico customizado
 Data, categoria, conta, descrição, notas
 Tags
 
-🔲 F5-06 - Tela Flutter: Editar/Detalhe Transação
+✅ F5-06 - Tela Flutter: Editar/Detalhe Transação
 
 Todos os campos editáveis
 Histórico de alterações
 
-🔲 F5-07 - Tela Flutter: Filtros e Busca
+✅ F5-07 - Tela Flutter: Filtros e Busca
 
 Filtro por período, categoria, conta, tipo, tags
 Busca por descrição
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 25 | 🔄 0 | 🔲 64 | ❌ 0
+Total: 89 tasks | ✅ 32 | 🔄 0 | 🔲 57 | ❌ 0

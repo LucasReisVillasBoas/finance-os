@@ -12,6 +12,10 @@ import '../../features/accounts/screens/accounts_screen.dart';
 import '../../features/accounts/screens/account_form_screen.dart';
 import '../../features/accounts/screens/account_detail_screen.dart';
 import '../../features/settings/screens/categories_screen.dart';
+import '../../features/transactions/screens/transactions_screen.dart';
+import '../../features/transactions/screens/transaction_form_screen.dart';
+import '../../features/transactions/screens/transaction_detail_screen.dart';
+import '../../features/transactions/screens/transaction_filters_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -83,6 +87,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings/categories',
         builder: (context, state) => const CategoriesScreen(),
+      ),
+      // Transactions
+      GoRoute(
+        path: '/transactions',
+        builder: (context, state) => const TransactionsScreen(),
+      ),
+      GoRoute(
+        path: '/transactions/new',
+        builder: (context, state) => const TransactionFormScreen(),
+      ),
+      GoRoute(
+        path: '/transactions/filters',
+        builder: (context, state) => const TransactionFiltersScreen(),
+      ),
+      GoRoute(
+        path: '/transactions/:id',
+        builder: (context, state) =>
+            TransactionDetailScreen(transactionId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/transactions/:id/edit',
+        builder: (context, state) =>
+            TransactionFormScreen(transactionId: state.pathParameters['id']),
       ),
     ],
   );

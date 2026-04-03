@@ -57,6 +57,10 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	categoryUC := usecase.NewCategoryUseCase(categoryRepo)
 	categoryH := NewCategoryHandler(categoryUC, logger)
 
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionUC := usecase.NewTransactionUseCase(transactionRepo)
+	transactionH := NewTransactionHandler(transactionUC, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -90,6 +94,15 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		protected.POST("/categories", categoryH.Create)
 		protected.PUT("/categories/:id", categoryH.Update)
 		protected.DELETE("/categories/:id", categoryH.Delete)
+
+		// Transactions
+		protected.GET("/transactions/summary", transactionH.GetSummary)
+		protected.POST("/transactions/transfer", transactionH.CreateTransfer)
+		protected.GET("/transactions", transactionH.List)
+		protected.POST("/transactions", transactionH.Create)
+		protected.GET("/transactions/:id", transactionH.GetByID)
+		protected.PUT("/transactions/:id", transactionH.Update)
+		protected.DELETE("/transactions/:id", transactionH.Delete)
 	}
 
 	return router
