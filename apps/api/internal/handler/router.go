@@ -73,6 +73,14 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	dashboardUC := usecase.NewDashboardUseCase(dashboardRepo)
 	dashboardH := NewDashboardHandler(dashboardUC, logger)
 
+	portfolioRepo := repository.NewPortfolioRepository(db)
+	holdingRepo := repository.NewHoldingRepository(db)
+	investTxRepo := repository.NewInvestmentTransactionRepository(db)
+	assetRepo := repository.NewAssetRepository(db)
+	customAssetRepo := repository.NewCustomAssetRepository(db)
+	investmentUC := usecase.NewInvestmentUseCase(portfolioRepo, holdingRepo, investTxRepo, assetRepo, customAssetRepo)
+	investmentH := NewInvestmentHandler(investmentUC, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -132,6 +140,32 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		// Dashboard
 		protected.GET("/dashboard/overview", dashboardH.GetOverview)
 		protected.GET("/dashboard/cashflow", dashboardH.GetCashflow)
+
+		// Investments — Portfolios
+		protected.GET("/portfolios", investmentH.ListPortfolios)
+		protected.POST("/portfolios", investmentH.CreatePortfolio)
+		protected.PUT("/portfolios/:id", investmentH.UpdatePortfolio)
+		protected.DELETE("/portfolios/:id", investmentH.DeletePortfolio)
+		protected.GET("/portfolios/:id/holdings", investmentH.ListHoldings)
+		protected.POST("/portfolios/:id/holdings", investmentH.CreateHolding)
+
+		// Investments — Holdings
+		protected.PUT("/holdings/:id", investmentH.UpdateHolding)
+		protected.DELETE("/holdings/:id", investmentH.DeleteHolding)
+		protected.GET("/holdings/:id/transactions", investmentH.ListInvestmentTransactions)
+		protected.POST("/holdings/:id/transactions", investmentH.CreateInvestmentTransaction)
+
+		// Investments — Transactions
+		protected.DELETE("/investment-transactions/:id", investmentH.DeleteInvestmentTransaction)
+
+		// Assets
+		protected.GET("/assets/search", investmentH.SearchAssets)
+
+		// Custom Assets
+		protected.GET("/custom-assets", investmentH.ListCustomAssets)
+		protected.POST("/custom-assets", investmentH.CreateCustomAsset)
+		protected.PUT("/custom-assets/:id", investmentH.UpdateCustomAsset)
+		protected.DELETE("/custom-assets/:id", investmentH.DeleteCustomAsset)
 	}
 
 	return router

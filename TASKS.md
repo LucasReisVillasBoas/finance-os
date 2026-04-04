@@ -292,34 +292,34 @@ Widgets: saldo, gráfico pizza categorias, fluxo de caixa, metas, carteira
 
 
 FASE 9 — Investimentos: Core
-🔲 F9-01 - CRUD Investment Portfolios (API)
+✅ F9-01 - CRUD Investment Portfolios (API)
 
 GET /portfolios
 POST /portfolios
 PUT /portfolios/:id
 DELETE /portfolios/:id
 
-🔲 F9-02 - CRUD Holdings (API)
+✅ F9-02 - CRUD Holdings (API)
 
 GET /portfolios/:id/holdings
 POST /portfolios/:id/holdings
 PUT /holdings/:id
 DELETE /holdings/:id
 
-🔲 F9-03 - CRUD Investment Transactions (API)
+✅ F9-03 - CRUD Investment Transactions (API)
 
 GET /holdings/:id/transactions
 POST /holdings/:id/transactions — compra, venda, dividendo
 DELETE /investment-transactions/:id
 
-🔲 F9-04 - Lógica de cálculo de posição (Go)
+✅ F9-04 - Lógica de cálculo de posição (Go)
 
 Preço médio ponderado após compra/venda
 Quantidade atualizada
 P&L realizado ao vender
 Total investido
 
-🔲 F9-05 - CRUD Custom Assets (API)
+✅ F9-05 - CRUD Custom Assets (API)
 
 GET /custom-assets
 POST /custom-assets — imóvel, veículo, etc.
@@ -328,29 +328,29 @@ DELETE /custom-assets/:id
 
 
 FASE 10 — Investimentos: Preços e Cotações
-🔲 F10-01 - Integração BRAPI (ações e FIIs BR)
+✅ F10-01 - Integração BRAPI (ações e FIIs BR)
 
 GET /assets/search?q=PETR4 — busca ativo
 Worker: atualizar preços B3 a cada 15min (horário de mercado)
 Fallback se API indisponível
 
-🔲 F10-02 - Integração Yahoo Finance (ações EUA, ETFs)
+✅ F10-02 - Integração Yahoo Finance (ações EUA, ETFs)
 
 Busca e atualização de preços USD
 Conversão BRL/USD via API de câmbio (AwesomeAPI)
 
-🔲 F10-03 - Integração CoinGecko (cripto)
+✅ F10-03 - Integração CoinGecko (cripto)
 
 Busca por nome/ticker
 Atualização de preços a cada 5min
 
-🔲 F10-04 - Worker: calcular P&L de holdings
+✅ F10-04 - Worker: calcular P&L de holdings
 
 Para cada holding com asset vinculado
 Recalcular current_value, unrealized_pnl, unrealized_pnl_pct
 Rodar após cada atualização de preço
 
-🔲 F10-05 - Cálculo de Renda Fixa (Go)
+✅ F10-05 - Cálculo de Renda Fixa (Go)
 
 CDI diário via API Bacen
 IPCA mensal via IBGE
@@ -359,30 +359,30 @@ Cálculo de IR regressivo
 
 
 FASE 11 — Investimentos: UI
-🔲 F11-01 - Tela Flutter: Carteira
+✅ F11-01 - Tela Flutter: Carteira
 
 Valor total investido vs atual vs variação
 Gráfico de alocação por classe (pizza)
 Lista de holdings com P&L individual
 
-🔲 F11-02 - Tela Flutter: Detalhe do Ativo
+✅ F11-02 - Tela Flutter: Detalhe do Ativo
 
 Gráfico de preço histórico (1d, 1m, 3m, 1a)
 Posição atual, preço médio, quantidade
 Histórico de operações
 
-🔲 F11-03 - Tela Flutter: Adicionar Operação
+✅ F11-03 - Tela Flutter: Adicionar Operação
 
 Busca de ativo (ticker ou nome)
 Tipo: compra, venda, dividendo
 Quantidade, preço, taxas, data
 
-🔲 F11-04 - Tela Flutter: Ativo Customizado
+✅ F11-04 - Tela Flutter: Ativo Customizado
 
 Form: nome, classe, valor atual, valor de compra, renda mensal
 Imóveis: endereço, aluguel mensal
 
-🔲 F11-05 - Tela Flutter: Análise de Carteira
+✅ F11-05 - Tela Flutter: Análise de Carteira
 
 Diversificação por setor, classe, moeda
 Concentração (alertar >30% em ativo único)
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 43 | 🔄 0 | 🔲 46 | ❌ 0
+Total: 89 tasks | ✅ 58 | 🔄 0 | 🔲 31 | ❌ 0

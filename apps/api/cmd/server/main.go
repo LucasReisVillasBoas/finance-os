@@ -81,6 +81,13 @@ func main() {
 	go recurrenceWorker.Run(workerCtx)
 	log.Info("recurrence worker started")
 
+	// Start price worker
+	assetRepo := repository.NewAssetRepository(db)
+	holdingRepo := repository.NewHoldingRepository(db)
+	priceWorker := worker.NewPriceWorker(assetRepo, holdingRepo, log)
+	go priceWorker.Run(workerCtx)
+	log.Info("price worker started")
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.App.Port),
 		Handler:      router,

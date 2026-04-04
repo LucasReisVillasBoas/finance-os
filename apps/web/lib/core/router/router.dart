@@ -21,6 +21,11 @@ import '../../features/transactions/screens/recurrence_form_screen.dart';
 import '../../features/budgets/screens/budgets_screen.dart';
 import '../../features/budgets/screens/budget_form_screen.dart';
 import '../../features/dashboard/screens/dashboard_config_screen.dart';
+import '../../features/investments/screens/portfolio_screen.dart';
+import '../../features/investments/screens/holding_detail_screen.dart';
+import '../../features/investments/screens/investment_form_screen.dart';
+import '../../features/investments/screens/custom_asset_form_screen.dart';
+import '../../features/investments/screens/portfolio_analysis_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -148,6 +153,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard/config',
         builder: (context, state) => const DashboardConfigScreen(),
+      ),
+      // Investments
+      GoRoute(
+        path: '/investments',
+        builder: (context, state) => const PortfolioScreen(),
+      ),
+      GoRoute(
+        path: '/investments/holdings/:id',
+        builder: (context, state) =>
+            HoldingDetailScreen(holdingId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/investments/new',
+        builder: (context, state) => const InvestmentFormScreen(),
+      ),
+      GoRoute(
+        path: '/investments/custom/new',
+        builder: (context, state) => const CustomAssetFormScreen(),
+      ),
+      GoRoute(
+        path: '/investments/custom/:id/edit',
+        builder: (context, state) =>
+            CustomAssetFormScreen(customAssetId: state.pathParameters['id']),
+      ),
+      GoRoute(
+        path: '/investments/analysis',
+        builder: (context, state) => const PortfolioAnalysisScreen(),
       ),
     ],
   );
