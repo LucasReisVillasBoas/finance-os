@@ -7,6 +7,7 @@ import (
 	"github.com/financeos/api/internal/handler/middleware"
 	"github.com/financeos/api/internal/repository"
 	"github.com/financeos/api/internal/usecase"
+	"github.com/financeos/api/pkg/claude"
 	"github.com/financeos/api/pkg/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -91,6 +92,18 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	whatsappRepo := repository.NewWhatsAppRepository(db)
 	whatsappUC := usecase.NewWhatsAppUseCase(whatsappRepo, transactionRepo, accountRepo)
 	webhookH := NewWebhookHandler(whatsappUC, cfg.Evolution.APIURL, cfg.Evolution.APIKey, logger)
+
+	claudeClient := claude.New(cfg.Claude.APIKey, cfg.Claude.Model)
+	aiUC := usecase.NewAIUseCase(claudeClient, transactionRepo, rdb)
+	aiH := NewAIHandler(aiUC, logger)
+
+	notificationRepo := repository.NewNotificationRepository(db)
+	notificationUC := usecase.NewNotificationUseCase(notificationRepo)
+	notificationH := NewNotificationHandler(notificationUC, logger)
+
+	familyRepo := repository.NewFamilyRepository(db)
+	familyUC := usecase.NewFamilyUseCase(familyRepo)
+	familyH := NewFamilyHandler(familyUC, logger)
 
 	// API v1
 	v1 := router.Group("/api/v1")
@@ -186,10 +199,37 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		protected.DELETE("/goals/:id", goalH.Delete)
 		protected.POST("/goals/:id/contribute", goalH.Contribute)
 
-		// Imports
-		protected.POST("/imports/ofx", importH.ImportOFX)
-		protected.POST("/imports/csv", importH.ImportCSV)
-		protected.POST("/imports/csv/preview", importH.PreviewCSV)
+		// Imports (pro plan required)
+		imports := protected.Group("/imports")
+		imports.Use(middleware.PlanMiddleware("pro"))
+		{
+			imports.POST("/ofx", importH.ImportOFX)
+			imports.POST("/csv", importH.ImportCSV)
+			imports.POST("/csv/preview", importH.PreviewCSV)
+		}
+
+		// Notifications
+		protected.GET("/notifications", notificationH.List)
+		protected.PUT("/notifications/read-all", notificationH.MarkAllAsRead)
+		protected.PUT("/notifications/:id/read", notificationH.MarkAsRead)
+		protected.DELETE("/notifications", notificationH.DeleteAll)
+
+		// Family
+		protected.POST("/family", familyH.Create)
+		protected.GET("/family", familyH.Get)
+		protected.POST("/family/invite", familyH.GetInvite)
+		protected.POST("/family/join", familyH.Join)
+		protected.DELETE("/family/members/:id", familyH.RemoveMember)
+		protected.GET("/family/dashboard", familyH.GetDashboard)
+
+		// AI (pro plan required for forecast and portfolio)
+		protected.POST("/ai/chat", aiH.Chat)
+		aiProtected := protected.Group("/ai")
+		aiProtected.Use(middleware.PlanMiddleware("pro"))
+		{
+			aiProtected.GET("/spending-forecast", aiH.GetSpendingForecast)
+			aiProtected.GET("/portfolio-analysis", aiH.GetPortfolioAnalysis)
+		}
 	}
 
 	// Public webhook routes (no auth)

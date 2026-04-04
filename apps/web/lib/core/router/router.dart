@@ -30,6 +30,13 @@ import '../../features/goals/screens/goals_screen.dart';
 import '../../features/goals/screens/goal_form_screen.dart';
 import '../../features/settings/screens/import_screen.dart';
 import '../../features/settings/screens/whatsapp_settings_screen.dart';
+import '../../features/settings/screens/notifications_screen.dart';
+import '../../features/settings/screens/notification_preferences_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
+import '../../features/settings/screens/profile_screen.dart';
+import '../../features/settings/screens/family_screen.dart';
+import '../../features/settings/screens/plans_screen.dart';
+import '../../features/settings/screens/ai_assistant_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -208,6 +215,41 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings/whatsapp',
         builder: (context, state) => const WhatsAppSettingsScreen(),
+      ),
+      // Settings — hub
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      // Settings — Profile
+      GoRoute(
+        path: '/settings/profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      // Settings — Notifications list
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      // Settings — Notification preferences
+      GoRoute(
+        path: '/settings/notifications',
+        builder: (context, state) => const NotificationPreferencesScreen(),
+      ),
+      // Settings — Family
+      GoRoute(
+        path: '/settings/family',
+        builder: (context, state) => const FamilyScreen(),
+      ),
+      // Settings — Plans
+      GoRoute(
+        path: '/settings/plans',
+        builder: (context, state) => const PlansScreen(),
+      ),
+      // Settings — AI Assistant
+      GoRoute(
+        path: '/settings/ai',
+        builder: (context, state) => const AIAssistantScreen(),
       ),
     ],
   );

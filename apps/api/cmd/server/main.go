@@ -16,6 +16,7 @@ import (
 	"github.com/financeos/api/internal/repository"
 	"github.com/financeos/api/internal/worker"
 	"github.com/financeos/api/pkg/cache"
+	"github.com/financeos/api/pkg/claude"
 	"github.com/financeos/api/pkg/config"
 	"github.com/financeos/api/pkg/database"
 	"github.com/financeos/api/pkg/logger"
@@ -87,6 +88,17 @@ func main() {
 	priceWorker := worker.NewPriceWorker(assetRepo, holdingRepo, log)
 	go priceWorker.Run(workerCtx)
 	log.Info("price worker started")
+
+	// Start AI worker
+	claudeClient := claude.New(cfg.Claude.APIKey, cfg.Claude.Model)
+	aiWorker := worker.NewAIWorker(claudeClient, log)
+	go aiWorker.Run(workerCtx)
+	log.Info("AI worker started")
+
+	// Start notification worker
+	notificationWorker := worker.NewNotificationWorker(log)
+	go notificationWorker.Run(workerCtx)
+	log.Info("notification worker started")
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.App.Port),

@@ -117,3 +117,17 @@ fmt-api:
 
 fmt-web:
 	cd $(WEB_DIR) && dart format .
+
+# Setup development environment
+setup:
+	chmod +x scripts/setup.sh && ./scripts/setup.sh
+
+# Production builds
+prod-up:
+	docker-compose -f docker-compose.prod.yml up -d
+
+prod-down:
+	docker-compose -f docker-compose.prod.yml down
+
+prod-logs:
+	docker-compose -f docker-compose.prod.yml logs -f

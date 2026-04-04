@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const String _baseUrl = String.fromEnvironment(
@@ -7,6 +8,21 @@ const String _baseUrl = String.fromEnvironment(
 );
 
 const _storage = FlutterSecureStorage();
+
+/// Global navigator key for showing SnackBars outside widget tree.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void _showSnackBar(String message, {bool isError = true}) {
+  final context = navigatorKey.currentContext;
+  if (context != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : null,
+      ),
+    );
+  }
+}
 
 Dio createDio() {
   final dio = Dio(
@@ -27,7 +43,36 @@ Dio createDio() {
         }
         handler.next(options);
       },
+      onResponse: (response, handler) {
+        handler.next(response);
+      },
       onError: (error, handler) {
+        final statusCode = error.response?.statusCode;
+        if (statusCode == 401) {
+          // Clear tokens and redirect to login
+          _storage.delete(key: 'access_token');
+          _storage.delete(key: 'refresh_token');
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            '/login',
+            (route) => false,
+          );
+        } else if (statusCode == 402) {
+          _showSnackBar('Faça upgrade do seu plano para acessar esta funcionalidade');
+        } else if (statusCode != null && statusCode >= 400 && statusCode < 500) {
+          final errorData = error.response?.data;
+          String message = 'Erro na requisição';
+          if (errorData is Map) {
+            final errorObj = errorData['error'];
+            if (errorObj is Map) {
+              message = errorObj['message'] as String? ?? message;
+            } else if (errorData['message'] is String) {
+              message = errorData['message'] as String;
+            }
+          }
+          _showSnackBar(message);
+        } else if (statusCode != null && statusCode >= 500) {
+          _showSnackBar('Erro interno. Tente novamente.');
+        }
         handler.next(error);
       },
     ),

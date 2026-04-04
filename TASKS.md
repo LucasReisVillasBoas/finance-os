@@ -475,35 +475,35 @@ Ativar/desativar
 
 
 FASE 15 — IA Features
-🔲 F15-01 - Categorização automática (API)
+✅ F15-01 - Categorização automática (API)
 
 Worker: categorizar transações sem categoria via Claude API
 Usar histórico do usuário como contexto
 Salvar ai_categorized=true + ai_confidence
 Só ativar para plano Pro+
 
-🔲 F15-02 - Previsão de gastos (API)
+✅ F15-02 - Previsão de gastos (API)
 
 GET /ai/spending-forecast
 Analisar padrão dos últimos 6 meses
 Projetar próximos 3 meses por categoria
 Cache de 24h no Redis
 
-🔲 F15-03 - Alertas inteligentes (Worker)
+✅ F15-03 - Alertas inteligentes (Worker)
 
 "Você gasta X% mais em dezembro"
 "Categoria Y aumentou Z% esse mês"
 "Você vai estourar o orçamento de X"
 Gerar via Claude API, salvar em ai_suggestions
 
-🔲 F15-04 - Análise de carteira IA
+✅ F15-04 - Análise de carteira IA
 
 GET /ai/portfolio-analysis
 Identificar concentração excessiva
 Sugerir rebalanceamento
 Comparar perfil de risco
 
-🔲 F15-05 - Assistente conversacional (Flutter)
+✅ F15-05 - Assistente conversacional (Flutter)
 
 Chat widget no app
 Contexto: saldo, gastos do mês, carteira
@@ -511,13 +511,13 @@ Responder perguntas financeiras personalizadas
 
 
 FASE 16 — Notificações
-🔲 F16-01 - Sistema de notificações (API)
+✅ F16-01 - Sistema de notificações (API)
 
 GET /notifications — listar
 PUT /notifications/:id/read — marcar como lida
 DELETE /notifications — limpar todas
 
-🔲 F16-02 - Worker: disparar notificações
+✅ F16-02 - Worker: disparar notificações
 
 Checar orçamentos acima do threshold
 Metas próximas de vencer
@@ -525,27 +525,27 @@ Recorrências vencendo amanhã
 Resumo semanal (domingo)
 Relatório mensal (dia 1)
 
-🔲 F16-03 - Email: templates
+✅ F16-03 - Email: templates
 
 Resumo semanal
 Alerta de orçamento
 Relatório mensal
 Usar templates HTML simples
 
-🔲 F16-04 - Tela Flutter: Central de Notificações
+✅ F16-04 - Tela Flutter: Central de Notificações
 
 Lista de notificações com ícone por tipo
 Marcar como lida / limpar
 Badge no ícone do app
 
-🔲 F16-05 - Tela Flutter: Preferências de Notificação
+✅ F16-05 - Tela Flutter: Preferências de Notificação
 
 Toggles por tipo e canal
 Configurar horário de resumo
 
 
 FASE 17 — Multi-usuário / Família
-🔲 F17-01 - CRUD Family Groups (API)
+✅ F17-01 - CRUD Family Groups (API)
 
 POST /family — criar grupo
 GET /family — meu grupo
@@ -553,12 +553,12 @@ POST /family/invite — gerar convite
 POST /family/join — entrar com código
 DELETE /family/members/:id — remover membro
 
-🔲 F17-02 - Visão consolidada família (API)
+✅ F17-02 - Visão consolidada família (API)
 
 GET /family/dashboard — soma de todos os membros
 Permissões por membro (view_transactions, view_investments)
 
-🔲 F17-03 - Tela Flutter: Família
+✅ F17-03 - Tela Flutter: Família
 
 Criar/entrar em grupo
 Lista de membros com permissões
@@ -566,16 +566,16 @@ Toggle de contas compartilhadas
 
 
 FASE 18 — Planos e Assinatura
-🔲 F18-01 - Middleware de plano (Go)
+✅ F18-01 - Middleware de plano (Go)
 
 Verificar plano do usuário em rotas premium
 Retornar 402 Payment Required com mensagem clara
 
-🔲 F18-02 - Feature flags por plano
+✅ F18-02 - Feature flags por plano
 Free:    contas (até 2), transações (ilimitado), categorias padrão, dashboard básico
 Pro:     contas ilimitadas, investimentos, IA básica, WhatsApp bot, importação
 Premium: família, IA completa, dashboards customizados, alertas avançados
-🔲 F18-03 - Tela Flutter: Planos e Upgrade
+✅ F18-03 - Tela Flutter: Planos e Upgrade
 
 Comparativo de planos em cards
 CTA para upgrade (link externo por enquanto)
@@ -583,64 +583,64 @@ Mostrar o que está bloqueado com cadeado
 
 
 FASE 19 — Polimento e Qualidade
-🔲 F19-01 - Tela Flutter: Perfil do Usuário
+✅ F19-01 - Tela Flutter: Perfil do Usuário
 
 Foto, nome, email
 Trocar senha
 Fuso horário e moeda
 Excluir conta
 
-🔲 F19-02 - Tela Flutter: Configurações
+✅ F19-02 - Tela Flutter: Configurações
 
 Preferências de notificação
 Categorias customizadas
 Campos customizados
 Sobre o app / versão
 
-🔲 F19-03 - Tratamento global de erros (Flutter)
+✅ F19-03 - Tratamento global de erros (Flutter)
 
 Interceptor Dio para erros de API
 Snackbars padronizados
 Tela de erro genérica com retry
 
-🔲 F19-04 - Loading states e skeleton screens
+✅ F19-04 - Loading states e skeleton screens
 
 Skeleton para todas as listas
 Shimmer effect enquanto carrega
 
-🔲 F19-05 - Testes de integração (API)
+✅ F19-05 - Testes de integração (API)
 
 Testes end-to-end dos principais fluxos
 Auth, transações, investimentos, orçamento
 
-🔲 F19-06 - Testes de widget (Flutter)
+✅ F19-06 - Testes de widget (Flutter)
 
 Telas principais: home, transações, carteira
 
-🔲 F19-07 - Responsividade web (Flutter)
+✅ F19-07 - Responsividade web (Flutter)
 
 Breakpoints: mobile (<768px), tablet (768-1200px), desktop (>1200px)
 Layout adaptado para cada tamanho
 
 
 FASE 20 — Deploy Local
-🔲 F20-01 - Build Flutter web para produção
+✅ F20-01 - Build Flutter web para produção
 
 flutter build web
 Servir com nginx no Docker
 
-🔲 F20-02 - Build Go para produção
+✅ F20-02 - Build Go para produção
 
 Compilar binário otimizado
 Dockerfile multi-stage
 
-🔲 F20-03 - docker-compose.prod.yml
+✅ F20-03 - docker-compose.prod.yml
 
 Sem volumes de desenvolvimento
 Variáveis de ambiente via .env
 Restart policies
 
-🔲 F20-04 - Script de setup inicial
+✅ F20-04 - Script de setup inicial
 
 Rodar migrations
 Seed de categorias padrão
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 70 | 🔄 0 | 🔲 19 | ❌ 0
+Total: 89 tasks | ✅ 89 | 🔄 0 | 🔲 0 | ❌ 0

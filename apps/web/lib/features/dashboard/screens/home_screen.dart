@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../accounts/providers/accounts_provider.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../models/dashboard_model.dart';
 import '../providers/dashboard_provider.dart';
 
@@ -59,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             case 3:
               context.go('/budgets');
             case 4:
-              context.go('/settings/categories');
+              context.go('/settings');
             default:
               setState(() => _currentIndex = index);
           }
@@ -117,17 +116,12 @@ class _DashboardBody extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.notifications_none),
               tooltip: 'Notificações',
-              onPressed: () {},
+              onPressed: () => context.push('/notifications'),
             ),
             IconButton(
               icon: const Icon(Icons.person_outline),
               tooltip: 'Perfil',
-              onPressed: () async {
-                await ref.read(authProvider.notifier).logout();
-                if (context.mounted) {
-                  context.go('/login');
-                }
-              },
+              onPressed: () => context.push('/settings/profile'),
             ),
           ],
         ),
