@@ -218,45 +218,45 @@ Busca por descrição
 
 
 FASE 6 — Transações Recorrentes
-🔲 F6-01 - CRUD Recurrences (API)
+✅ F6-01 - CRUD Recurrences (API)
 
 GET /recurrences
 POST /recurrences
 PUT /recurrences/:id
 DELETE /recurrences/:id
 
-🔲 F6-02 - Worker: processar recorrências diariamente
+✅ F6-02 - Worker: processar recorrências diariamente
 
 Verificar next_due_date
 Se auto_launch, criar transação automaticamente
 Notificar usuário se não for auto_launch
 
-🔲 F6-03 - Tela Flutter: Gerenciar Recorrências
+✅ F6-03 - Tela Flutter: Gerenciar Recorrências
 
 Lista com próxima data, valor, tipo
 Toggle auto_launch
 
 
 FASE 7 — Orçamento
-🔲 F7-01 - CRUD Budgets (API)
+✅ F7-01 - CRUD Budgets (API)
 
 GET /budgets — orçamentos do período atual
 POST /budgets — criar
 PUT /budgets/:id — editar
 DELETE /budgets/:id — excluir
 
-🔲 F7-02 - GET /budgets/progress
+✅ F7-02 - GET /budgets/progress
 
 Para cada orçamento: previsto vs realizado vs percentual
 Alertas (acima de threshold)
 
-🔲 F7-03 - Tela Flutter: Orçamentos
+✅ F7-03 - Tela Flutter: Orçamentos
 
 Barra de progresso por categoria
 Cores: verde (<70%), amarelo (70-90%), vermelho (>90%)
 FAB para adicionar orçamento
 
-🔲 F7-04 - Tela Flutter: Criar Orçamento
+✅ F7-04 - Tela Flutter: Criar Orçamento
 
 Selecionar categoria ou geral
 Valor e período
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 32 | 🔄 0 | 🔲 57 | ❌ 0
+Total: 89 tasks | ✅ 39 | 🔄 0 | 🔲 50 | ❌ 0

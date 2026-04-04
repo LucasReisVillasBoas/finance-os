@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/financeos/api/internal/handler"
+	"github.com/financeos/api/internal/repository"
+	"github.com/financeos/api/internal/worker"
 	"github.com/financeos/api/pkg/cache"
 	"github.com/financeos/api/pkg/config"
 	"github.com/financeos/api/pkg/database"
@@ -71,6 +73,14 @@ func main() {
 	// Setup router with all routes
 	router := handler.SetupRouter(cfg, db, redisClient, log)
 
+	// Start recurrence worker
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	recurrenceRepo := repository.NewRecurrenceRepository(db)
+	transactionRepo := repository.NewTransactionRepository(db)
+	recurrenceWorker := worker.NewRecurrenceWorker(recurrenceRepo, transactionRepo, log)
+	go recurrenceWorker.Run(workerCtx)
+	log.Info("recurrence worker started")
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.App.Port),
 		Handler:      router,
@@ -93,6 +103,7 @@ func main() {
 	<-quit
 
 	log.Info("shutting down server...")
+	workerCancel()
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()

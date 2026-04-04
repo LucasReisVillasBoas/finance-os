@@ -61,6 +61,14 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	transactionUC := usecase.NewTransactionUseCase(transactionRepo)
 	transactionH := NewTransactionHandler(transactionUC, logger)
 
+	recurrenceRepo := repository.NewRecurrenceRepository(db)
+	recurrenceUC := usecase.NewRecurrenceUseCase(recurrenceRepo)
+	recurrenceH := NewRecurrenceHandler(recurrenceUC, logger)
+
+	budgetRepo := repository.NewBudgetRepository(db)
+	budgetUC := usecase.NewBudgetUseCase(budgetRepo)
+	budgetH := NewBudgetHandler(budgetUC, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -103,6 +111,19 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		protected.GET("/transactions/:id", transactionH.GetByID)
 		protected.PUT("/transactions/:id", transactionH.Update)
 		protected.DELETE("/transactions/:id", transactionH.Delete)
+
+		// Recurrences
+		protected.GET("/recurrences", recurrenceH.List)
+		protected.POST("/recurrences", recurrenceH.Create)
+		protected.PUT("/recurrences/:id", recurrenceH.Update)
+		protected.DELETE("/recurrences/:id", recurrenceH.Delete)
+
+		// Budgets
+		protected.GET("/budgets/progress", budgetH.GetProgress)
+		protected.GET("/budgets", budgetH.List)
+		protected.POST("/budgets", budgetH.Create)
+		protected.PUT("/budgets/:id", budgetH.Update)
+		protected.DELETE("/budgets/:id", budgetH.Delete)
 	}
 
 	return router

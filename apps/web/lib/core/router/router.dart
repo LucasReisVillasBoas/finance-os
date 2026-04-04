@@ -16,6 +16,10 @@ import '../../features/transactions/screens/transactions_screen.dart';
 import '../../features/transactions/screens/transaction_form_screen.dart';
 import '../../features/transactions/screens/transaction_detail_screen.dart';
 import '../../features/transactions/screens/transaction_filters_screen.dart';
+import '../../features/transactions/screens/recurrences_screen.dart';
+import '../../features/transactions/screens/recurrence_form_screen.dart';
+import '../../features/budgets/screens/budgets_screen.dart';
+import '../../features/budgets/screens/budget_form_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -110,6 +114,34 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/transactions/:id/edit',
         builder: (context, state) =>
             TransactionFormScreen(transactionId: state.pathParameters['id']),
+      ),
+      // Recurrences
+      GoRoute(
+        path: '/recurrences',
+        builder: (context, state) => const RecurrencesScreen(),
+      ),
+      GoRoute(
+        path: '/recurrences/new',
+        builder: (context, state) => const RecurrenceFormScreen(),
+      ),
+      GoRoute(
+        path: '/recurrences/:id/edit',
+        builder: (context, state) =>
+            RecurrenceFormScreen(recurrenceId: state.pathParameters['id']),
+      ),
+      // Budgets
+      GoRoute(
+        path: '/budgets',
+        builder: (context, state) => const BudgetsScreen(),
+      ),
+      GoRoute(
+        path: '/budgets/new',
+        builder: (context, state) => const BudgetFormScreen(),
+      ),
+      GoRoute(
+        path: '/budgets/:id/edit',
+        builder: (context, state) =>
+            BudgetFormScreen(budgetId: state.pathParameters['id']),
       ),
     ],
   );
