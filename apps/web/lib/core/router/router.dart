@@ -20,6 +20,7 @@ import '../../features/transactions/screens/recurrences_screen.dart';
 import '../../features/transactions/screens/recurrence_form_screen.dart';
 import '../../features/budgets/screens/budgets_screen.dart';
 import '../../features/budgets/screens/budget_form_screen.dart';
+import '../../features/dashboard/screens/dashboard_config_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -142,6 +143,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/budgets/:id/edit',
         builder: (context, state) =>
             BudgetFormScreen(budgetId: state.pathParameters['id']),
+      ),
+      // Dashboard config
+      GoRoute(
+        path: '/dashboard/config',
+        builder: (context, state) => const DashboardConfigScreen(),
       ),
     ],
   );

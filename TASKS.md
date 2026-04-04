@@ -264,7 +264,7 @@ Threshold de alerta
 
 
 FASE 8 — Dashboard Principal
-🔲 F8-01 - GET /dashboard/overview
+✅ F8-01 - GET /dashboard/overview
 
 Saldo total líquido
 Receitas e despesas do mês
@@ -272,19 +272,19 @@ Top 5 categorias de gasto
 Orçamentos em alerta
 Patrimônio total (financeiro + investimentos + custom assets)
 
-🔲 F8-02 - GET /dashboard/cashflow
+✅ F8-02 - GET /dashboard/cashflow
 
 Fluxo de caixa dos últimos 12 meses
 Previsão próximos 3 meses (baseado em recorrências)
 
-🔲 F8-03 - Tela Flutter: Home / Dashboard
+✅ F8-03 - Tela Flutter: Home / Dashboard
 
 Cards de saldo por conta
 Gráfico de receitas vs despesas
 Atalhos rápidos (+ transação, ver carteira)
 Feed de últimas transações
 
-🔲 F8-04 - Tela Flutter: Dashboard Customizável
+✅ F8-04 - Tela Flutter: Dashboard Customizável
 
 Grid de widgets drag-and-drop
 Adicionar/remover/reordenar widgets
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 39 | 🔄 0 | 🔲 50 | ❌ 0
+Total: 89 tasks | ✅ 43 | 🔄 0 | 🔲 46 | ❌ 0

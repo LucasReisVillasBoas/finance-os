@@ -69,6 +69,10 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	budgetUC := usecase.NewBudgetUseCase(budgetRepo)
 	budgetH := NewBudgetHandler(budgetUC, logger)
 
+	dashboardRepo := repository.NewDashboardRepository(db)
+	dashboardUC := usecase.NewDashboardUseCase(dashboardRepo)
+	dashboardH := NewDashboardHandler(dashboardUC, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -124,6 +128,10 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		protected.POST("/budgets", budgetH.Create)
 		protected.PUT("/budgets/:id", budgetH.Update)
 		protected.DELETE("/budgets/:id", budgetH.Delete)
+
+		// Dashboard
+		protected.GET("/dashboard/overview", dashboardH.GetOverview)
+		protected.GET("/dashboard/cashflow", dashboardH.GetCashflow)
 	}
 
 	return router
