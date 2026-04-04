@@ -38,32 +38,49 @@ import '../../features/settings/screens/family_screen.dart';
 import '../../features/settings/screens/plans_screen.dart';
 import '../../features/settings/screens/ai_assistant_screen.dart';
 
+/// RouterNotifier bridges Riverpod auth state with GoRouter's refreshListenable.
+/// The GoRouter instance is created ONCE and notified on auth changes —
+/// avoids the bug of recreating GoRouter on every auth state change.
+class RouterNotifier extends ChangeNotifier {
+  RouterNotifier(this._ref) {
+    _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+  }
+
+  final Ref _ref;
+
+  String? redirect(BuildContext context, GoRouterState state) {
+    final authState = _ref.read(authProvider);
+    final isAuthenticated = authState.user != null;
+    final isLoading = authState.isLoading;
+
+    // Stay on splash while auth check is in progress
+    if (isLoading && state.matchedLocation == '/') return null;
+
+    final publicRoutes = {'/login', '/register', '/onboarding', '/'};
+
+    if (!isAuthenticated && !publicRoutes.contains(state.matchedLocation)) {
+      return '/login';
+    }
+    if (isAuthenticated &&
+        (state.matchedLocation == '/login' ||
+            state.matchedLocation == '/register')) {
+      return '/home';
+    }
+    return null;
+  }
+}
+
+final _routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final notifier = ref.watch(_routerNotifierProvider);
 
   return GoRouter(
     initialLocation: '/',
-    redirect: (BuildContext context, GoRouterState state) {
-      final isAuthenticated = authState.user != null;
-      final isLoading = authState.isLoading;
-
-      // While checking auth, stay on splash
-      if (isLoading && state.matchedLocation == '/') {
-        return null;
-      }
-
-      final publicRoutes = ['/login', '/register', '/onboarding', '/'];
-
-      if (!isAuthenticated && !publicRoutes.contains(state.matchedLocation)) {
-        return '/login';
-      }
-
-      if (isAuthenticated && (state.matchedLocation == '/login' || state.matchedLocation == '/register')) {
-        return '/home';
-      }
-
-      return null;
-    },
+    refreshListenable: notifier,
+    redirect: notifier.redirect,
     routes: [
       GoRoute(
         path: '/',
@@ -226,7 +243,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings/profile',
         builder: (context, state) => const ProfileScreen(),
       ),
-      // Settings — Notifications list
+      // Notifications list
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationsScreen(),
