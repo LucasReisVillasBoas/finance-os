@@ -26,6 +26,10 @@ import '../../features/investments/screens/holding_detail_screen.dart';
 import '../../features/investments/screens/investment_form_screen.dart';
 import '../../features/investments/screens/custom_asset_form_screen.dart';
 import '../../features/investments/screens/portfolio_analysis_screen.dart';
+import '../../features/goals/screens/goals_screen.dart';
+import '../../features/goals/screens/goal_form_screen.dart';
+import '../../features/settings/screens/import_screen.dart';
+import '../../features/settings/screens/whatsapp_settings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -180,6 +184,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/investments/analysis',
         builder: (context, state) => const PortfolioAnalysisScreen(),
+      ),
+      // Goals
+      GoRoute(
+        path: '/goals',
+        builder: (context, state) => const GoalsScreen(),
+      ),
+      GoRoute(
+        path: '/goals/new',
+        builder: (context, state) => const GoalFormScreen(),
+      ),
+      GoRoute(
+        path: '/goals/:id/edit',
+        builder: (context, state) =>
+            GoalFormScreen(goalId: state.pathParameters['id']),
+      ),
+      // Settings — Import
+      GoRoute(
+        path: '/settings/import',
+        builder: (context, state) => const ImportScreen(),
+      ),
+      // Settings — WhatsApp
+      GoRoute(
+        path: '/settings/whatsapp',
+        builder: (context, state) => const WhatsAppSettingsScreen(),
       ),
     ],
   );

@@ -81,6 +81,17 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	investmentUC := usecase.NewInvestmentUseCase(portfolioRepo, holdingRepo, investTxRepo, assetRepo, customAssetRepo)
 	investmentH := NewInvestmentHandler(investmentUC, logger)
 
+	goalRepo := repository.NewGoalRepository(db)
+	goalUC := usecase.NewGoalUseCase(goalRepo)
+	goalH := NewGoalHandler(goalUC, logger)
+
+	importUC := usecase.NewImportUseCase(transactionRepo)
+	importH := NewImportHandler(importUC, logger)
+
+	whatsappRepo := repository.NewWhatsAppRepository(db)
+	whatsappUC := usecase.NewWhatsAppUseCase(whatsappRepo, transactionRepo, accountRepo)
+	webhookH := NewWebhookHandler(whatsappUC, cfg.Evolution.APIURL, cfg.Evolution.APIKey, logger)
+
 	// API v1
 	v1 := router.Group("/api/v1")
 
@@ -166,6 +177,25 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		protected.POST("/custom-assets", investmentH.CreateCustomAsset)
 		protected.PUT("/custom-assets/:id", investmentH.UpdateCustomAsset)
 		protected.DELETE("/custom-assets/:id", investmentH.DeleteCustomAsset)
+
+		// Goals
+		protected.GET("/goals/projections", goalH.GetProjections)
+		protected.GET("/goals", goalH.List)
+		protected.POST("/goals", goalH.Create)
+		protected.PUT("/goals/:id", goalH.Update)
+		protected.DELETE("/goals/:id", goalH.Delete)
+		protected.POST("/goals/:id/contribute", goalH.Contribute)
+
+		// Imports
+		protected.POST("/imports/ofx", importH.ImportOFX)
+		protected.POST("/imports/csv", importH.ImportCSV)
+		protected.POST("/imports/csv/preview", importH.PreviewCSV)
+	}
+
+	// Public webhook routes (no auth)
+	webhooks := router.Group("/webhooks")
+	{
+		webhooks.POST("/whatsapp", webhookH.WhatsApp)
 	}
 
 	return router

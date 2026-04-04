@@ -390,7 +390,7 @@ Comparativo com benchmark (IBOV, CDI)
 
 
 FASE 12 — Metas
-🔲 F12-01 - CRUD Goals (API)
+✅ F12-01 - CRUD Goals (API)
 
 GET /goals
 POST /goals
@@ -398,12 +398,12 @@ PUT /goals/:id
 DELETE /goals/:id
 POST /goals/:id/contribute — adicionar aporte
 
-🔲 F12-02 - GET /goals/projections
+✅ F12-02 - GET /goals/projections
 
 Estimativa de quando cada meta será atingida
 Com e sem aportes mensais
 
-🔲 F12-03 - Tela Flutter: Metas
+✅ F12-03 - Tela Flutter: Metas
 
 Cards com barra de progresso
 Estimativa de conclusão
@@ -411,20 +411,20 @@ Botão de aporte
 
 
 FASE 13 — Importação de Dados
-🔲 F13-01 - Importação OFX (API)
+✅ F13-01 - Importação OFX (API)
 
 POST /imports/ofx — upload de arquivo
 Parser de OFX em Go
 Detecção de duplicatas via import_id
 Pré-categorização automática por histórico
 
-🔲 F13-02 - Importação CSV (API)
+✅ F13-02 - Importação CSV (API)
 
 POST /imports/csv
 Mapeamento de colunas configurável
 Preview antes de confirmar
 
-🔲 F13-03 - Tela Flutter: Importar Extrato
+✅ F13-03 - Tela Flutter: Importar Extrato
 
 Upload de arquivo OFX ou CSV
 Mapeamento de campos
@@ -433,19 +433,19 @@ Relatório de resultado (importados, duplicatas, erros)
 
 
 FASE 14 — WhatsApp Bot
-🔲 F14-01 - Setup Evolution API (Docker)
+✅ F14-01 - Setup Evolution API (Docker)
 
 Adicionar ao docker-compose.yml
 Webhook configurado para API Go
 QR Code de conexão
 
-🔲 F14-02 - Endpoint POST /webhooks/whatsapp
+✅ F14-02 - Endpoint POST /webhooks/whatsapp
 
 Receber mensagens da Evolution API
 Identificar usuário pelo número
 Roteamento para state machine
 
-🔲 F14-03 - State machine do bot (Go)
+✅ F14-03 - State machine do bot (Go)
 
 Estado idle: aguardar comando
 Processar "gastei X reais em Y" → criar transação
@@ -453,13 +453,13 @@ Processar "quanto gastei esse mês?" → responder
 Confirmar antes de salvar
 Timeout de sessão (15min)
 
-🔲 F14-04 - Integração Claude API no bot
+✅ F14-04 - Integração Claude API no bot
 
 Interpretar mensagem em linguagem natural
 Extrair: valor, categoria sugerida, descrição, data
 Confidence score — se baixo, pedir confirmação
 
-🔲 F14-05 - Comandos do bot
+✅ F14-05 - Comandos do bot
 
 "resumo" → saldo e gastos do mês
 "gastei X" → lançar despesa
@@ -467,7 +467,7 @@ Confidence score — se baixo, pedir confirmação
 "quanto gastei com alimentação?" → consulta por categoria
 "carteira" → resumo de investimentos
 
-🔲 F14-06 - Tela Flutter: Configurar WhatsApp Bot
+✅ F14-06 - Tela Flutter: Configurar WhatsApp Bot
 
 Vincular número
 Ver histórico de mensagens processadas
@@ -648,4 +648,4 @@ Criar usuário admin de teste
 
 
 Contador de Tasks
-Total: 89 tasks | ✅ 58 | 🔄 0 | 🔲 31 | ❌ 0
+Total: 89 tasks | ✅ 70 | 🔄 0 | 🔲 19 | ❌ 0
