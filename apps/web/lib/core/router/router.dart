@@ -43,7 +43,7 @@ import '../../features/settings/screens/ai_assistant_screen.dart';
 /// avoids the bug of recreating GoRouter on every auth state change.
 class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
-    _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+    _ref.listen<AuthState>(authProvider, (prev, next) => notifyListeners());
   }
 
   final Ref _ref;

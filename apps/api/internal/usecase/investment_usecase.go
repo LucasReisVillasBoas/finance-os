@@ -327,6 +327,9 @@ func (uc *investmentUseCase) SearchAssets(ctx context.Context, query string) ([]
 	if err != nil {
 		return nil, fmt.Errorf("investmentUseCase.SearchAssets: %w", err)
 	}
+	if assets == nil {
+		assets = []*entity.Asset{}
+	}
 	return assets, nil
 }
 
