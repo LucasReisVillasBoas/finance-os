@@ -100,7 +100,7 @@ class GoalsNotifier extends StateNotifier<GoalsState> {
     try {
       final payload = <String, dynamic>{
         'amount': amount,
-        'date': date.toIso8601String(),
+        'date': date.toUtc().toIso8601String(),
         if (notes != null && notes.isNotEmpty) 'notes': notes,
       };
       await _repo.contribute(goalId, payload);

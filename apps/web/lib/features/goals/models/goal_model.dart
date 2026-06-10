@@ -61,7 +61,7 @@ class GoalModel {
       'name': name,
       'target_amount': targetAmount,
       'current_amount': currentAmount,
-      if (targetDate != null) 'target_date': targetDate!.toIso8601String(),
+      if (targetDate != null) 'target_date': targetDate!.toUtc().toIso8601String(),
       if (monthlyContribution != null)
         'monthly_contribution': monthlyContribution,
       if (icon != null) 'icon': icon,

@@ -53,7 +53,7 @@ class CustomAssetModel {
         'type': type,
         'current_value': currentValue,
         if (purchaseValue != null) 'purchase_value': purchaseValue,
-        if (purchaseDate != null) 'purchase_date': purchaseDate!.toIso8601String(),
+        if (purchaseDate != null) 'purchase_date': purchaseDate!.toUtc().toIso8601String(),
         'monthly_income': monthlyIncome,
         if (description != null) 'description': description,
         'is_active': isActive,

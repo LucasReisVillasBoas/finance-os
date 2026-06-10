@@ -10,7 +10,7 @@ class GoalRepository {
   Future<List<GoalModel>> list() async {
     final response = await _dio.get('/goals');
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => GoalModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -39,7 +39,7 @@ class GoalRepository {
   Future<List<GoalProjectionModel>> getProjections() async {
     final response = await _dio.get('/goals/projections');
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => GoalProjectionModel.fromJson(e as Map<String, dynamic>))
         .toList();

@@ -23,6 +23,23 @@ func NewTransactionHandler(uc usecase.TransactionUseCase, logger *zap.Logger) *T
 }
 
 // List handles GET /api/v1/transactions
+//
+//	@Summary		Listar transações
+//	@Description	Retorna transações paginadas com filtros opcionais
+//	@Tags			Transactions
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			start_date	query	string	false	"Data inicial (YYYY-MM-DD)"
+//	@Param			end_date	query	string	false	"Data final (YYYY-MM-DD)"
+//	@Param			type		query	string	false	"income | expense"
+//	@Param			category_id	query	string	false	"UUID da categoria"
+//	@Param			account_id	query	string	false	"UUID da conta"
+//	@Param			search		query	string	false	"Busca por descrição"
+//	@Param			page		query	int		false	"Página (default: 1)"
+//	@Param			page_size	query	int		false	"Itens por página (default: 20)"
+//	@Success		200	{object}	TransactionListResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Router			/transactions [get]
 func (h *TransactionHandler) List(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -63,6 +80,16 @@ func (h *TransactionHandler) List(c *gin.Context) {
 }
 
 // Create handles POST /api/v1/transactions
+//
+//	@Summary		Criar transação
+//	@Tags			Transactions
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateTransactionRequest	true	"Dados da transação"
+//	@Success		201	{object}	TransactionResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/transactions [post]
 func (h *TransactionHandler) Create(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -87,6 +114,16 @@ func (h *TransactionHandler) Create(c *gin.Context) {
 }
 
 // GetSummary handles GET /api/v1/transactions/summary
+//
+//	@Summary		Resumo de transações
+//	@Description	Agrega receitas, despesas e saldo do período
+//	@Tags			Transactions
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			start_date	query	string	false	"Data inicial (YYYY-MM-DD)"
+//	@Param			end_date	query	string	false	"Data final (YYYY-MM-DD)"
+//	@Success		200	{object}	TransactionSummaryResponse
+//	@Router			/transactions/summary [get]
 func (h *TransactionHandler) GetSummary(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -131,6 +168,17 @@ func (h *TransactionHandler) GetSummary(c *gin.Context) {
 }
 
 // CreateTransfer handles POST /api/v1/transactions/transfer
+//
+//	@Summary		Criar transferência
+//	@Description	Cria par de transações (saída + entrada) entre contas
+//	@Tags			Transactions
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateTransferRequest	true	"Dados da transferência"
+//	@Success		201	{object}	TransferResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/transactions/transfer [post]
 func (h *TransactionHandler) CreateTransfer(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -159,6 +207,15 @@ func (h *TransactionHandler) CreateTransfer(c *gin.Context) {
 }
 
 // GetByID handles GET /api/v1/transactions/:id
+//
+//	@Summary		Buscar transação por ID
+//	@Tags			Transactions
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da transação"
+//	@Success		200	{object}	TransactionResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/transactions/{id} [get]
 func (h *TransactionHandler) GetByID(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -187,6 +244,17 @@ func (h *TransactionHandler) GetByID(c *gin.Context) {
 }
 
 // Update handles PUT /api/v1/transactions/:id
+//
+//	@Summary		Atualizar transação
+//	@Tags			Transactions
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string							true	"UUID da transação"
+//	@Param			body	body	usecase.UpdateTransactionRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	TransactionResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/transactions/{id} [put]
 func (h *TransactionHandler) Update(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -221,6 +289,15 @@ func (h *TransactionHandler) Update(c *gin.Context) {
 }
 
 // Delete handles DELETE /api/v1/transactions/:id
+//
+//	@Summary		Remover transação
+//	@Tags			Transactions
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da transação"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/transactions/{id} [delete]
 func (h *TransactionHandler) Delete(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

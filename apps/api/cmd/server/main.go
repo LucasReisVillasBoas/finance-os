@@ -15,6 +15,7 @@ import (
 	"github.com/financeos/api/internal/handler"
 	"github.com/financeos/api/internal/repository"
 	"github.com/financeos/api/internal/worker"
+	"github.com/financeos/api/pkg/brapi"
 	"github.com/financeos/api/pkg/cache"
 	"github.com/financeos/api/pkg/claude"
 	"github.com/financeos/api/pkg/config"
@@ -85,7 +86,8 @@ func main() {
 	// Start price worker
 	assetRepo := repository.NewAssetRepository(db)
 	holdingRepo := repository.NewHoldingRepository(db)
-	priceWorker := worker.NewPriceWorker(assetRepo, holdingRepo, log)
+	brapiSvc := brapi.NewBrapiService()
+	priceWorker := worker.NewPriceWorker(assetRepo, holdingRepo, log, brapiSvc)
 	go priceWorker.Run(workerCtx)
 	log.Info("price worker started")
 

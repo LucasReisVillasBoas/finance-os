@@ -20,6 +20,15 @@ func NewAIHandler(uc usecase.AIUseCase, logger *zap.Logger) *AIHandler {
 }
 
 // GetSpendingForecast handles GET /api/v1/ai/spending-forecast
+//
+//	@Summary		Previsão de gastos
+//	@Description	Análise preditiva de gastos com IA (plano Pro)
+//	@Tags			AI
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	AIForecastResponse
+//	@Failure		402	{object}	ErrorResponse	"Plano insuficiente"
+//	@Router			/ai/spending-forecast [get]
 func (h *AIHandler) GetSpendingForecast(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -37,6 +46,15 @@ func (h *AIHandler) GetSpendingForecast(c *gin.Context) {
 }
 
 // GetPortfolioAnalysis handles GET /api/v1/ai/portfolio-analysis
+//
+//	@Summary		Análise de portfólio com IA
+//	@Description	Insights sobre diversificação e performance (plano Pro)
+//	@Tags			AI
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	AIForecastResponse
+//	@Failure		402	{object}	ErrorResponse	"Plano insuficiente"
+//	@Router			/ai/portfolio-analysis [get]
 func (h *AIHandler) GetPortfolioAnalysis(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -54,6 +72,17 @@ func (h *AIHandler) GetPortfolioAnalysis(c *gin.Context) {
 }
 
 // Chat handles POST /api/v1/ai/chat
+//
+//	@Summary		Assistente financeiro
+//	@Description	Conversa com o assistente financeiro alimentado por Claude
+//	@Tags			AI
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	object{message=string}	true	"Mensagem (máx. 2000 chars)"
+//	@Success		200	{object}	AIChatResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/ai/chat [post]
 func (h *AIHandler) Chat(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

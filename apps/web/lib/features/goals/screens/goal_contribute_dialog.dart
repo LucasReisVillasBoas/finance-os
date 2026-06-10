@@ -101,7 +101,7 @@ class _GoalContributeDialogState extends State<GoalContributeDialog> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(
-                'Data: ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
+                'Data: ${DateFormat('dd/MM/yyyy', 'pt_BR').format(_selectedDate)}',
               ),
               leading: const Icon(Icons.calendar_today),
               onTap: _pickDate,

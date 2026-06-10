@@ -21,6 +21,17 @@ func NewAuthHandler(uc usecase.AuthUseCase, logger *zap.Logger) *AuthHandler {
 }
 
 // Register handles POST /auth/register
+//
+//	@Summary		Registrar novo usuário
+//	@Description	Cria uma conta e retorna tokens JWT + dados do usuário
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		usecase.RegisterRequest	true	"Dados de registro"
+//	@Success		201		{object}	AuthDataResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		409		{object}	ErrorResponse	"E-mail já cadastrado"
+//	@Router			/auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req usecase.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -43,6 +54,17 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 // Login handles POST /auth/login
+//
+//	@Summary		Login
+//	@Description	Autentica o usuário e retorna tokens JWT
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		usecase.LoginRequest	true	"Credenciais"
+//	@Success		200		{object}	AuthDataResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse	"Credenciais inválidas"
+//	@Router			/auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req usecase.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -65,6 +87,17 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // Refresh handles POST /auth/refresh
+//
+//	@Summary		Renovar tokens
+//	@Description	Troca um refresh token expirado por um novo par de tokens
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		object{refresh_token=string}	true	"Refresh token"
+//	@Success		200		{object}	AuthDataResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse	"Token inválido ou revogado"
+//	@Router			/auth/refresh [post]
 func (h *AuthHandler) Refresh(c *gin.Context) {
 	var body struct {
 		RefreshToken string `json:"refresh_token" binding:"required"`
@@ -89,6 +122,18 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 }
 
 // Logout handles POST /auth/logout (protected)
+//
+//	@Summary		Logout
+//	@Description	Revoga os tokens do usuário e encerra a sessão
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body		object{refresh_token=string}	true	"Refresh token"
+//	@Success		200		{object}	MessageResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Router			/auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	var body struct {
 		RefreshToken string `json:"refresh_token" binding:"required"`
@@ -115,6 +160,16 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 }
 
 // ForgotPassword handles POST /auth/forgot-password
+//
+//	@Summary		Solicitar redefinição de senha
+//	@Description	Envia e-mail com link de redefinição (sempre retorna 200 por segurança)
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		object{email=string}	true	"E-mail"
+//	@Success		200		{object}	MessageResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Router			/auth/forgot-password [post]
 func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	var body struct {
 		Email string `json:"email" binding:"required,email"`
@@ -134,6 +189,16 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 }
 
 // ResetPassword handles POST /auth/reset-password
+//
+//	@Summary		Redefinir senha
+//	@Description	Define uma nova senha usando o token recebido por e-mail
+//	@Tags			Auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		object{token=string,password=string}	true	"Token e nova senha (mín. 8 caracteres)"
+//	@Success		200		{object}	MessageResponse
+//	@Failure		400		{object}	ErrorResponse	"Token inválido ou senha fraca"
+//	@Router			/auth/reset-password [post]
 func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	var body struct {
 		Token    string `json:"token" binding:"required"`

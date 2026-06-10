@@ -93,6 +93,9 @@ func (r *assetRepository) Search(ctx context.Context, query string) ([]*entity.A
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("assetRepository.Search rows: %w", err)
 	}
+	if assets == nil {
+		assets = []*entity.Asset{}
+	}
 	return assets, nil
 }
 
@@ -128,6 +131,9 @@ func (r *assetRepository) FindAll(ctx context.Context) ([]*entity.Asset, error) 
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("assetRepository.FindAll rows: %w", err)
+	}
+	if assets == nil {
+		assets = []*entity.Asset{}
 	}
 	return assets, nil
 }

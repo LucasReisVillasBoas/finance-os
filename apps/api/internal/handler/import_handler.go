@@ -23,6 +23,19 @@ func NewImportHandler(uc usecase.ImportUseCase, logger *zap.Logger) *ImportHandl
 }
 
 // ImportOFX handles POST /api/v1/imports/ofx
+//
+//	@Summary		Importar extrato OFX
+//	@Description	Importa transações a partir de arquivo OFX/QFX (plano Pro)
+//	@Tags			Imports
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			file		formData	file		true	"Arquivo OFX"
+//	@Param			account_id	formData	string		true	"UUID da conta destino"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Failure		402	{object}	ErrorResponse	"Plano insuficiente"
+//	@Router			/imports/ofx [post]
 func (h *ImportHandler) ImportOFX(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -62,6 +75,19 @@ func (h *ImportHandler) ImportOFX(c *gin.Context) {
 }
 
 // ImportCSV handles POST /api/v1/imports/csv
+//
+//	@Summary		Importar extrato CSV
+//	@Description	Importa transações de arquivo CSV com mapeamento de colunas (plano Pro)
+//	@Tags			Imports
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			file		formData	file		true	"Arquivo CSV"
+//	@Param			account_id	formData	string		true	"UUID da conta destino"
+//	@Param			mapping		formData	string		false	"JSON de mapeamento de colunas"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		402	{object}	ErrorResponse	"Plano insuficiente"
+//	@Router			/imports/csv [post]
 func (h *ImportHandler) ImportCSV(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -119,6 +145,17 @@ func (h *ImportHandler) ImportCSV(c *gin.Context) {
 }
 
 // PreviewCSV handles POST /api/v1/imports/csv/preview
+//
+//	@Summary		Pré-visualizar CSV antes de importar
+//	@Description	Retorna as primeiras linhas do CSV para conferência (plano Pro)
+//	@Tags			Imports
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			file	formData	file	true	"Arquivo CSV"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		402	{object}	ErrorResponse	"Plano insuficiente"
+//	@Router			/imports/csv/preview [post]
 func (h *ImportHandler) PreviewCSV(c *gin.Context) {
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {

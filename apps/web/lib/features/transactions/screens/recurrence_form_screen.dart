@@ -127,8 +127,8 @@ class _RecurrenceFormScreenState extends ConsumerState<RecurrenceFormScreen> {
       if (_descriptionController.text.isNotEmpty)
         'description': _descriptionController.text,
       'frequency': _selectedFrequency,
-      'start_date': _startDate.toIso8601String(),
-      if (_endDate != null) 'end_date': _endDate!.toIso8601String(),
+      'start_date': _startDate.toUtc().toIso8601String(),
+      if (_endDate != null) 'end_date': _endDate!.toUtc().toIso8601String(),
       'auto_launch': _autoLaunch,
     };
 
@@ -158,7 +158,7 @@ class _RecurrenceFormScreenState extends ConsumerState<RecurrenceFormScreen> {
     final accountsState = ref.watch(accountsProvider);
     final categoriesState = ref.watch(categoriesProvider);
     final recurrencesState = ref.watch(recurrencesProvider);
-    final dateFormatter = DateFormat('dd/MM/yyyy');
+    final dateFormatter = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     return Scaffold(
       appBar: AppBar(

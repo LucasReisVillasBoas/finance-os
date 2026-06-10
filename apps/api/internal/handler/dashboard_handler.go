@@ -21,7 +21,16 @@ func NewDashboardHandler(uc usecase.DashboardUseCase, logger *zap.Logger) *Dashb
 }
 
 // GetOverview returns the dashboard overview for a given month and year.
-// GET /api/v1/dashboard/overview?month=4&year=2026
+//
+//	@Summary		Visão geral do mês
+//	@Description	Retorna saldo líquido, receitas, despesas e top categorias
+//	@Tags			Dashboard
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			month	query	int	false	"Mês (1-12, default: atual)"
+//	@Param			year	query	int	false	"Ano (default: atual)"
+//	@Success		200	{object}	DashboardOverviewResponse
+//	@Router			/dashboard/overview [get]
 func (h *DashboardHandler) GetOverview(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -46,7 +55,13 @@ func (h *DashboardHandler) GetOverview(c *gin.Context) {
 }
 
 // GetCashflow returns the last 12 months cashflow data.
-// GET /api/v1/dashboard/cashflow
+//
+//	@Summary		Cashflow dos últimos 12 meses
+//	@Tags			Dashboard
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	CashflowResponse
+//	@Router			/dashboard/cashflow [get]
 func (h *DashboardHandler) GetCashflow(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)

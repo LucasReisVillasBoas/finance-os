@@ -24,6 +24,59 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _showForgotPasswordDialog(BuildContext context) async {
+    final emailController = TextEditingController();
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Redefinir senha'),
+        content: TextFormField(
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'E-mail',
+            hintText: 'Informe seu e-mail',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailController.text.trim();
+              if (email.isEmpty || !email.contains('@')) return;
+              try {
+                await ref.read(authRepositoryProvider).forgotPassword(email: email);
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('E-mail de redefinição enviado. Verifique sua caixa de entrada.'),
+                    ),
+                  );
+                }
+              } catch (_) {
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Erro ao enviar e-mail. Tente novamente.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Enviar'),
+          ),
+        ],
+      ),
+    );
+    emailController.dispose();
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -120,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {}, // TODO(phase3): forgot password screen
+                        onPressed: () => _showForgotPasswordDialog(context),
                         child: const Text('Esqueceu a senha?'),
                       ),
                     ),

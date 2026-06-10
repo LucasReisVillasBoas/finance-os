@@ -35,7 +35,7 @@ class PortfolioModel {
         'name': name,
         if (description != null) 'description': description,
         'is_default': isDefault,
-        'created_at': createdAt.toIso8601String(),
-        'updated_at': updatedAt.toIso8601String(),
+        'created_at': createdAt.toUtc().toIso8601String(),
+        'updated_at': updatedAt.toUtc().toIso8601String(),
       };
 }

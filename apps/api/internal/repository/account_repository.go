@@ -76,6 +76,9 @@ func (r *accountRepository) FindByUserID(ctx context.Context, userID uuid.UUID) 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("accountRepository.FindByUserID rows: %w", err)
 	}
+	if accounts == nil {
+		accounts = []*entity.Account{}
+	}
 	return accounts, nil
 }
 

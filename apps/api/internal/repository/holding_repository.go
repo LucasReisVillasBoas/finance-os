@@ -85,6 +85,9 @@ func (r *holdingRepository) FindByPortfolioID(ctx context.Context, portfolioID u
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("holdingRepository.FindByPortfolioID rows: %w", err)
 	}
+	if holdings == nil {
+		holdings = []*entity.Holding{}
+	}
 	return holdings, nil
 }
 
@@ -112,6 +115,9 @@ func (r *holdingRepository) FindAll(ctx context.Context) ([]*entity.Holding, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("holdingRepository.FindAll rows: %w", err)
+	}
+	if holdings == nil {
+		holdings = []*entity.Holding{}
 	}
 	return holdings, nil
 }

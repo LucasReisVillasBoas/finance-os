@@ -22,6 +22,15 @@ func NewCategoryHandler(uc usecase.CategoryUseCase, logger *zap.Logger) *Categor
 }
 
 // List handles GET /api/v1/categories
+//
+//	@Summary		Listar categorias
+//	@Description	Retorna categorias do sistema e categorias personalizadas do usuário
+//	@Tags			Categories
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	CategoryListResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Router			/categories [get]
 func (h *CategoryHandler) List(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -40,6 +49,16 @@ func (h *CategoryHandler) List(c *gin.Context) {
 }
 
 // Create handles POST /api/v1/categories
+//
+//	@Summary		Criar categoria
+//	@Tags			Categories
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateCategoryRequest	true	"Dados da categoria"
+//	@Success		201	{object}	CategoryResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/categories [post]
 func (h *CategoryHandler) Create(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -64,6 +83,17 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 }
 
 // Update handles PUT /api/v1/categories/:id
+//
+//	@Summary		Atualizar categoria
+//	@Tags			Categories
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string	true	"UUID da categoria"
+//	@Param			body	body	usecase.UpdateCategoryRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	CategoryResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/categories/{id} [put]
 func (h *CategoryHandler) Update(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -102,6 +132,15 @@ func (h *CategoryHandler) Update(c *gin.Context) {
 }
 
 // Delete handles DELETE /api/v1/categories/:id
+//
+//	@Summary		Remover categoria
+//	@Tags			Categories
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da categoria"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/categories/{id} [delete]
 func (h *CategoryHandler) Delete(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

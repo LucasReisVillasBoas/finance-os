@@ -65,7 +65,7 @@ class TransactionRepository {
     );
     final body = response.data as Map<String, dynamic>;
     final meta = body['meta'] as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     final transactions = dataList
         .map((e) => TransactionModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -117,7 +117,7 @@ class TransactionRepository {
   Future<List<TransactionModel>> createTransfer(Map<String, dynamic> payload) async {
     final response = await _dio.post('/transactions/transfer', data: payload);
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => TransactionModel.fromJson(e as Map<String, dynamic>))
         .toList();

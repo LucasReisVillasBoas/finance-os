@@ -107,7 +107,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
       'name': _nameController.text.trim(),
       'target_amount': targetAmount,
       if (_targetDate != null)
-        'target_date': _targetDate!.toIso8601String(),
+        'target_date': _targetDate!.toUtc().toIso8601String(),
       'monthly_contribution': monthly,
       'icon': _selectedIcon,
       if (_selectedColor != null)
@@ -247,7 +247,7 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
               contentPadding: EdgeInsets.zero,
               title: Text(
                 _targetDate != null
-                    ? 'Data alvo: ${DateFormat('dd/MM/yyyy').format(_targetDate!)}'
+                    ? 'Data alvo: ${DateFormat('dd/MM/yyyy', 'pt_BR').format(_targetDate!)}'
                     : 'Data alvo (opcional)',
               ),
               leading: const Icon(Icons.calendar_today),

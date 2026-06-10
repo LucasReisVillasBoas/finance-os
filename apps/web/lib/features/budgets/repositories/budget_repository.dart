@@ -17,7 +17,7 @@ class BudgetRepository {
       queryParameters: params.isNotEmpty ? params : null,
     );
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => BudgetModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -49,7 +49,7 @@ class BudgetRepository {
       queryParameters: params.isNotEmpty ? params : null,
     );
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => BudgetProgressModel.fromJson(e as Map<String, dynamic>))
         .toList();

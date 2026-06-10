@@ -9,7 +9,7 @@ class NotificationRepository {
 
   Future<List<NotificationModel>> getAll() async {
     final response = await _dio.get('/notifications');
-    final data = response.data['data'] as List<dynamic>;
+    final data = (response.data['data'] as List<dynamic>?) ?? [];
     return data
         .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
         .toList();

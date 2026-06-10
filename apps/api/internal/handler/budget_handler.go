@@ -42,6 +42,15 @@ func parseMonthYear(c *gin.Context) (int, int) {
 }
 
 // List returns budgets for the given month/year.
+//
+//	@Summary		Listar orçamentos
+//	@Tags			Budgets
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			month	query	int	false	"Mês (1-12, default: atual)"
+//	@Param			year	query	int	false	"Ano (default: atual)"
+//	@Success		200	{object}	BudgetListResponse
+//	@Router			/budgets [get]
 func (h *BudgetHandler) List(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -63,6 +72,16 @@ func (h *BudgetHandler) List(c *gin.Context) {
 }
 
 // Create creates a new budget.
+//
+//	@Summary		Criar orçamento
+//	@Tags			Budgets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateBudgetRequest	true	"Dados do orçamento"
+//	@Success		201	{object}	BudgetResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/budgets [post]
 func (h *BudgetHandler) Create(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -88,6 +107,16 @@ func (h *BudgetHandler) Create(c *gin.Context) {
 }
 
 // GetProgress returns budget progress for the given month/year.
+//
+//	@Summary		Progresso dos orçamentos
+//	@Description	Retorna planejado vs real por categoria
+//	@Tags			Budgets
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			month	query	int	false	"Mês (1-12, default: atual)"
+//	@Param			year	query	int	false	"Ano (default: atual)"
+//	@Success		200	{object}	BudgetProgressResponse
+//	@Router			/budgets/progress [get]
 func (h *BudgetHandler) GetProgress(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -109,6 +138,17 @@ func (h *BudgetHandler) GetProgress(c *gin.Context) {
 }
 
 // Update updates an existing budget.
+//
+//	@Summary		Atualizar orçamento
+//	@Tags			Budgets
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string						true	"UUID do orçamento"
+//	@Param			body	body	usecase.UpdateBudgetRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	BudgetResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/budgets/{id} [put]
 func (h *BudgetHandler) Update(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -145,6 +185,15 @@ func (h *BudgetHandler) Update(c *gin.Context) {
 }
 
 // Delete removes a budget.
+//
+//	@Summary		Remover orçamento
+//	@Tags			Budgets
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do orçamento"
+//	@Success		204	"No Content"
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/budgets/{id} [delete]
 func (h *BudgetHandler) Delete(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)

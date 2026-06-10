@@ -10,7 +10,7 @@ class AccountRepository {
   Future<List<AccountModel>> getAll() async {
     final response = await _dio.get('/accounts');
     final data = response.data as Map<String, dynamic>;
-    final list = data['data'] as List<dynamic>;
+    final list = (data['data'] as List<dynamic>?) ?? [];
     return list
         .map((e) => AccountModel.fromJson(e as Map<String, dynamic>))
         .toList();

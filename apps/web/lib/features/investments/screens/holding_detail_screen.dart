@@ -28,7 +28,7 @@ class _HoldingDetailScreenState extends ConsumerState<HoldingDetailScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(investmentsProvider);
     final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     // Find the holding from state
     final holding = state.holdings.cast<HoldingModel?>().firstWhere(

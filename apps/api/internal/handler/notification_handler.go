@@ -21,6 +21,13 @@ func NewNotificationHandler(uc usecase.NotificationUseCase, logger *zap.Logger) 
 }
 
 // List handles GET /api/v1/notifications
+//
+//	@Summary		Listar notificações
+//	@Tags			Notifications
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	NotificationListResponse
+//	@Router			/notifications [get]
 func (h *NotificationHandler) List(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -43,6 +50,14 @@ func (h *NotificationHandler) List(c *gin.Context) {
 }
 
 // MarkAsRead handles PUT /api/v1/notifications/:id/read
+//
+//	@Summary		Marcar como lida
+//	@Tags			Notifications
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da notificação"
+//	@Success		200	{object}	UpdatedResponse
+//	@Router			/notifications/{id}/read [put]
 func (h *NotificationHandler) MarkAsRead(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -65,6 +80,13 @@ func (h *NotificationHandler) MarkAsRead(c *gin.Context) {
 }
 
 // MarkAllAsRead handles PUT /api/v1/notifications/read-all
+//
+//	@Summary		Marcar todas como lidas
+//	@Tags			Notifications
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	UpdatedResponse
+//	@Router			/notifications/read-all [put]
 func (h *NotificationHandler) MarkAllAsRead(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -81,6 +103,12 @@ func (h *NotificationHandler) MarkAllAsRead(c *gin.Context) {
 }
 
 // DeleteAll handles DELETE /api/v1/notifications
+//
+//	@Summary		Remover todas as notificações
+//	@Tags			Notifications
+//	@Security		BearerAuth
+//	@Success		204	"No Content"
+//	@Router			/notifications [delete]
 func (h *NotificationHandler) DeleteAll(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

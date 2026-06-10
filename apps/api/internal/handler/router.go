@@ -7,6 +7,7 @@ import (
 	"github.com/financeos/api/internal/handler/middleware"
 	"github.com/financeos/api/internal/repository"
 	"github.com/financeos/api/internal/usecase"
+	"github.com/financeos/api/pkg/brapi"
 	"github.com/financeos/api/pkg/claude"
 	"github.com/financeos/api/pkg/config"
 	"github.com/gin-contrib/cors"
@@ -14,6 +15,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
+
+	_ "github.com/financeos/api/docs"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
 )
 
 // SetupRouter configures and returns the Gin engine with all routes registered.
@@ -37,12 +42,26 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	router.Use(cors.New(corsConfig))
 
 	// Health check
+	//
+	//	@Summary		Health check
+	//	@Tags			Health
+	//	@Produce		json
+	//	@Success		200	{object}	HealthResponse
+	//	@Router			/health [get]
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  "ok",
 			"service": "financeos-api",
 			"env":     cfg.App.Env,
 		})
+	})
+
+	// Swagger JSON spec
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// Scalar UI — modern API docs
+	router.GET("/docs", func(c *gin.Context) {
+		c.Data(http.StatusOK, "text/html; charset=utf-8", scalarHTML())
 	})
 
 	// Dependencies
@@ -79,7 +98,8 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	investTxRepo := repository.NewInvestmentTransactionRepository(db)
 	assetRepo := repository.NewAssetRepository(db)
 	customAssetRepo := repository.NewCustomAssetRepository(db)
-	investmentUC := usecase.NewInvestmentUseCase(portfolioRepo, holdingRepo, investTxRepo, assetRepo, customAssetRepo)
+	brapiSvc := brapi.NewBrapiService()
+	investmentUC := usecase.NewInvestmentUseCase(portfolioRepo, holdingRepo, investTxRepo, assetRepo, customAssetRepo, brapiSvc, rdb)
 	investmentH := NewInvestmentHandler(investmentUC, logger)
 
 	goalRepo := repository.NewGoalRepository(db)

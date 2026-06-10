@@ -111,7 +111,7 @@ class _TransactionFormScreenState
       if (_descriptionController.text.isNotEmpty)
         'description': _descriptionController.text,
       if (_notesController.text.isNotEmpty) 'notes': _notesController.text,
-      'date': _date.toIso8601String(),
+      'date': _date.toUtc().toIso8601String(),
       'tags': _tags,
     };
 
@@ -122,7 +122,11 @@ class _TransactionFormScreenState
             .updateTransaction(widget.transactionId!, payload);
         if (mounted) {
           if (success) {
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/transactions');
+            }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Erro ao atualizar transação')),
@@ -135,7 +139,11 @@ class _TransactionFormScreenState
             .createTransaction(payload);
         if (mounted) {
           if (tx != null) {
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/transactions');
+            }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Erro ao criar transação')),
@@ -156,7 +164,7 @@ class _TransactionFormScreenState
   Widget build(BuildContext context) {
     final accountsState = ref.watch(accountsProvider);
     final categoriesState = ref.watch(categoriesProvider);
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     return Scaffold(
       appBar: AppBar(

@@ -1,10 +1,10 @@
 # ---- Development stage ----
-FROM golang:1.22-alpine AS development
+FROM golang:1.25-alpine AS development
 
 RUN apk add --no-cache git curl
 
-# Install air for hot reload
-RUN go install github.com/air-verse/air@latest
+# Try to install air for hot reload; fall back gracefully if network unavailable
+RUN go install github.com/air-verse/air@latest || echo "air not available, will use direct go build"
 
 WORKDIR /app
 
@@ -15,10 +15,11 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["air", "-c", ".air.toml"]
+# Use air if available, otherwise fall back to direct go build + run
+CMD sh -c 'if command -v air > /dev/null 2>&1; then air -c .air.toml; else go build -o /tmp/financeos-api ./cmd/server && /tmp/financeos-api; fi'
 
 # ---- Builder stage ----
-FROM golang:1.22-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 RUN apk add --no-cache git
 

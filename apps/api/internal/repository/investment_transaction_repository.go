@@ -56,6 +56,9 @@ func (r *investmentTransactionRepository) FindByHoldingID(ctx context.Context, h
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("investmentTransactionRepository.FindByHoldingID rows: %w", err)
 	}
+	if txs == nil {
+		txs = []*entity.InvestmentTransaction{}
+	}
 	return txs, nil
 }
 

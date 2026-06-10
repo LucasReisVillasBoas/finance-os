@@ -23,7 +23,7 @@ class DashboardRepository {
   Future<List<MonthlyCashflowModel>> getCashflow() async {
     final response = await _dio.get('/dashboard/cashflow');
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => MonthlyCashflowModel.fromJson(e as Map<String, dynamic>))
         .toList();

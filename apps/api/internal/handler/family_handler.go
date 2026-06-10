@@ -21,6 +21,16 @@ func NewFamilyHandler(uc usecase.FamilyUseCase, logger *zap.Logger) *FamilyHandl
 }
 
 // Create handles POST /api/v1/family
+//
+//	@Summary		Criar grupo familiar
+//	@Tags			Family
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	object{name=string}	true	"Nome do grupo"
+//	@Success		201	{object}	FamilyGroupResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/family [post]
 func (h *FamilyHandler) Create(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -46,6 +56,14 @@ func (h *FamilyHandler) Create(c *gin.Context) {
 }
 
 // Get handles GET /api/v1/family
+//
+//	@Summary		Obter grupo familiar
+//	@Tags			Family
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	FamilyGroupResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/family [get]
 func (h *FamilyHandler) Get(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -67,6 +85,13 @@ func (h *FamilyHandler) Get(c *gin.Context) {
 }
 
 // GetInvite handles POST /api/v1/family/invite
+//
+//	@Summary		Gerar código de convite
+//	@Tags			Family
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	InviteCodeResponse
+//	@Router			/family/invite [post]
 func (h *FamilyHandler) GetInvite(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -84,6 +109,16 @@ func (h *FamilyHandler) GetInvite(c *gin.Context) {
 }
 
 // Join handles POST /api/v1/family/join
+//
+//	@Summary		Entrar em grupo familiar via convite
+//	@Tags			Family
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	object{invite_code=string}	true	"Código de convite"
+//	@Success		200	{object}	FamilyGroupResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/family/join [post]
 func (h *FamilyHandler) Join(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -109,6 +144,13 @@ func (h *FamilyHandler) Join(c *gin.Context) {
 }
 
 // RemoveMember handles DELETE /api/v1/family/members/:id
+//
+//	@Summary		Remover membro do grupo
+//	@Tags			Family
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do membro"
+//	@Success		204	"No Content"
+//	@Router			/family/members/{id} [delete]
 func (h *FamilyHandler) RemoveMember(c *gin.Context) {
 	ownerID, err := parseUserID(c)
 	if err != nil {
@@ -131,6 +173,13 @@ func (h *FamilyHandler) RemoveMember(c *gin.Context) {
 }
 
 // GetDashboard handles GET /api/v1/family/dashboard
+//
+//	@Summary		Dashboard do grupo familiar
+//	@Tags			Family
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	FamilyDashboardResponse
+//	@Router			/family/dashboard [get]
 func (h *FamilyHandler) GetDashboard(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

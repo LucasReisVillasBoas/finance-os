@@ -37,9 +37,16 @@ Dio createDio() {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await _storage.read(key: 'access_token');
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+        try {
+          final token = await _storage
+              .read(key: 'access_token')
+              .timeout(const Duration(seconds: 3));
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+        } catch (_) {
+          // Storage read failed or timed out — proceed without token.
+          // API will return 401 which is handled below.
         }
         handler.next(options);
       },
@@ -49,13 +56,8 @@ Dio createDio() {
       onError: (error, handler) {
         final statusCode = error.response?.statusCode;
         if (statusCode == 401) {
-          // Clear tokens and redirect to login
           _storage.delete(key: 'access_token');
           _storage.delete(key: 'refresh_token');
-          navigatorKey.currentState?.pushNamedAndRemoveUntil(
-            '/login',
-            (route) => false,
-          );
         } else if (statusCode == 402) {
           _showSnackBar('Faça upgrade do seu plano para acessar esta funcionalidade');
         } else if (statusCode != null && statusCode >= 400 && statusCode < 500) {
@@ -64,9 +66,9 @@ Dio createDio() {
           if (errorData is Map) {
             final errorObj = errorData['error'];
             if (errorObj is Map) {
-              message = errorObj['message'] as String? ?? message;
-            } else if (errorData['message'] is String) {
-              message = errorData['message'] as String;
+              message = (errorObj['message'] as Object?)?.toString() ?? message;
+            } else if (errorData['message'] != null) {
+              message = errorData['message'].toString();
             }
           }
           _showSnackBar(message);

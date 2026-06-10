@@ -10,7 +10,7 @@ class RecurrenceRepository {
   Future<List<RecurrenceModel>> list() async {
     final response = await _dio.get('/recurrences');
     final body = response.data as Map<String, dynamic>;
-    final dataList = body['data'] as List<dynamic>;
+    final dataList = ((body['data'] as List<dynamic>?) ?? []);
     return dataList
         .map((e) => RecurrenceModel.fromJson(e as Map<String, dynamic>))
         .toList();

@@ -21,6 +21,13 @@ func NewRecurrenceHandler(uc usecase.RecurrenceUseCase, logger *zap.Logger) *Rec
 }
 
 // List returns all recurrences for the authenticated user.
+//
+//	@Summary		Listar recorrências
+//	@Tags			Recurrences
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	RecurrenceListResponse
+//	@Router			/recurrences [get]
 func (h *RecurrenceHandler) List(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -40,6 +47,16 @@ func (h *RecurrenceHandler) List(c *gin.Context) {
 }
 
 // Create creates a new recurrence for the authenticated user.
+//
+//	@Summary		Criar recorrência
+//	@Tags			Recurrences
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateRecurrenceRequest	true	"Dados da recorrência"
+//	@Success		201	{object}	RecurrenceResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/recurrences [post]
 func (h *RecurrenceHandler) Create(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -65,6 +82,17 @@ func (h *RecurrenceHandler) Create(c *gin.Context) {
 }
 
 // Update updates an existing recurrence.
+//
+//	@Summary		Atualizar recorrência
+//	@Tags			Recurrences
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string							true	"UUID da recorrência"
+//	@Param			body	body	usecase.UpdateRecurrenceRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	RecurrenceResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/recurrences/{id} [put]
 func (h *RecurrenceHandler) Update(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)
@@ -101,6 +129,15 @@ func (h *RecurrenceHandler) Update(c *gin.Context) {
 }
 
 // Delete removes a recurrence.
+//
+//	@Summary		Remover recorrência
+//	@Tags			Recurrences
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da recorrência"
+//	@Success		204	"No Content"
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/recurrences/{id} [delete]
 func (h *RecurrenceHandler) Delete(c *gin.Context) {
 	userIDStr := c.GetString("user_id")
 	userID, err := uuid.Parse(userIDStr)

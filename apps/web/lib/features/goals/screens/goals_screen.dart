@@ -303,7 +303,7 @@ class _GoalCard extends StatelessWidget {
                   const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
-                    'Meta: ${DateFormat('dd/MM/yyyy').format(goal.targetDate!)}',
+                    'Meta: ${DateFormat('dd/MM/yyyy', 'pt_BR').format(goal.targetDate!)}',
                     style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                   ),
                 ],

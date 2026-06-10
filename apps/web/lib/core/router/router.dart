@@ -37,16 +37,18 @@ import '../../features/settings/screens/profile_screen.dart';
 import '../../features/settings/screens/family_screen.dart';
 import '../../features/settings/screens/plans_screen.dart';
 import '../../features/settings/screens/ai_assistant_screen.dart';
+import '../../shared/widgets/app_shell.dart';
 
 /// RouterNotifier bridges Riverpod auth state with GoRouter's refreshListenable.
 /// The GoRouter instance is created ONCE and notified on auth changes —
 /// avoids the bug of recreating GoRouter on every auth state change.
 class RouterNotifier extends ChangeNotifier {
-  RouterNotifier(this._ref) {
-    _ref.listen<AuthState>(authProvider, (prev, next) => notifyListeners());
-  }
+  RouterNotifier(this._ref);
 
   final Ref _ref;
+
+  /// Called by the provider when auth state changes.
+  void onAuthStateChanged() => notifyListeners();
 
   String? redirect(BuildContext context, GoRouterState state) {
     final authState = _ref.read(authProvider);
@@ -71,17 +73,23 @@ class RouterNotifier extends ChangeNotifier {
 }
 
 final _routerNotifierProvider = Provider<RouterNotifier>((ref) {
-  return RouterNotifier(ref);
+  final notifier = RouterNotifier(ref);
+  // ref.listen is called on the Provider's ref — correct Riverpod 2.x pattern.
+  // Calling it inside the class constructor causes silent crash on web.
+  ref.listen<AuthState>(authProvider, (prev, next) => notifier.onAuthStateChanged());
+  ref.onDispose(notifier.dispose);
+  return notifier;
 });
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(_routerNotifierProvider);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/',
     refreshListenable: notifier,
     redirect: notifier.redirect,
     routes: [
+      // ── Public routes (no shell) ──────────────────────────────────────────
       GoRoute(
         path: '/',
         builder: (context, state) => const SplashScreen(),
@@ -98,15 +106,51 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
+
+      // ── Main shell (persistent BottomNavigationBar + directional animation) ─
+      ShellRoute(
+        builder: (context, state, child) => AppShell(
+          location: state.matchedLocation,
+          child: child,
+        ),
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/transactions',
+            builder: (context, state) => const TransactionsScreen(),
+          ),
+          GoRoute(
+            path: '/accounts',
+            builder: (context, state) => const AccountsScreen(),
+          ),
+          GoRoute(
+            path: '/budgets',
+            builder: (context, state) => const BudgetsScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/investments',
+            builder: (context, state) => const PortfolioScreen(),
+          ),
+          GoRoute(
+            path: '/goals',
+            builder: (context, state) => const GoalsScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationsScreen(),
+          ),
+        ],
       ),
+
+      // ── Secondary routes (no shell) ───────────────────────────────────────
       // Accounts
-      GoRoute(
-        path: '/accounts',
-        builder: (context, state) => const AccountsScreen(),
-      ),
       GoRoute(
         path: '/accounts/new',
         builder: (context, state) => const AccountFormScreen(),
@@ -121,16 +165,40 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             AccountFormScreen(accountId: state.pathParameters['id']),
       ),
-      // Settings
+      // Settings sub-pages
       GoRoute(
         path: '/settings/categories',
         builder: (context, state) => const CategoriesScreen(),
       ),
-      // Transactions
       GoRoute(
-        path: '/transactions',
-        builder: (context, state) => const TransactionsScreen(),
+        path: '/settings/profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
+      GoRoute(
+        path: '/settings/import',
+        builder: (context, state) => const ImportScreen(),
+      ),
+      GoRoute(
+        path: '/settings/whatsapp',
+        builder: (context, state) => const WhatsAppSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/notifications',
+        builder: (context, state) => const NotificationPreferencesScreen(),
+      ),
+      GoRoute(
+        path: '/settings/family',
+        builder: (context, state) => const FamilyScreen(),
+      ),
+      GoRoute(
+        path: '/settings/plans',
+        builder: (context, state) => const PlansScreen(),
+      ),
+      GoRoute(
+        path: '/settings/ai',
+        builder: (context, state) => const AIAssistantScreen(),
+      ),
+      // Transactions
       GoRoute(
         path: '/transactions/new',
         builder: (context, state) => const TransactionFormScreen(),
@@ -141,8 +209,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/transactions/:id',
-        builder: (context, state) =>
-            TransactionDetailScreen(transactionId: state.pathParameters['id']!),
+        builder: (context, state) => TransactionDetailScreen(
+            transactionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/transactions/:id/edit',
@@ -165,10 +233,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Budgets
       GoRoute(
-        path: '/budgets',
-        builder: (context, state) => const BudgetsScreen(),
-      ),
-      GoRoute(
         path: '/budgets/new',
         builder: (context, state) => const BudgetFormScreen(),
       ),
@@ -184,17 +248,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Investments
       GoRoute(
-        path: '/investments',
-        builder: (context, state) => const PortfolioScreen(),
+        path: '/investments/new',
+        builder: (context, state) => const InvestmentFormScreen(),
       ),
       GoRoute(
         path: '/investments/holdings/:id',
         builder: (context, state) =>
             HoldingDetailScreen(holdingId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        path: '/investments/new',
-        builder: (context, state) => const InvestmentFormScreen(),
       ),
       GoRoute(
         path: '/investments/custom/new',
@@ -211,10 +271,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Goals
       GoRoute(
-        path: '/goals',
-        builder: (context, state) => const GoalsScreen(),
-      ),
-      GoRoute(
         path: '/goals/new',
         builder: (context, state) => const GoalFormScreen(),
       ),
@@ -223,51 +279,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             GoalFormScreen(goalId: state.pathParameters['id']),
       ),
-      // Settings — Import
-      GoRoute(
-        path: '/settings/import',
-        builder: (context, state) => const ImportScreen(),
-      ),
-      // Settings — WhatsApp
-      GoRoute(
-        path: '/settings/whatsapp',
-        builder: (context, state) => const WhatsAppSettingsScreen(),
-      ),
-      // Settings — hub
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
-      // Settings — Profile
-      GoRoute(
-        path: '/settings/profile',
-        builder: (context, state) => const ProfileScreen(),
-      ),
-      // Notifications list
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      // Settings — Notification preferences
-      GoRoute(
-        path: '/settings/notifications',
-        builder: (context, state) => const NotificationPreferencesScreen(),
-      ),
-      // Settings — Family
-      GoRoute(
-        path: '/settings/family',
-        builder: (context, state) => const FamilyScreen(),
-      ),
-      // Settings — Plans
-      GoRoute(
-        path: '/settings/plans',
-        builder: (context, state) => const PlansScreen(),
-      ),
-      // Settings — AI Assistant
-      GoRoute(
-        path: '/settings/ai',
-        builder: (context, state) => const AIAssistantScreen(),
-      ),
     ],
   );
+  ref.onDispose(router.dispose);
+  return router;
 });

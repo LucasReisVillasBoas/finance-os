@@ -10,7 +10,7 @@ class CategoryRepository {
   Future<List<CategoryModel>> getAll() async {
     final response = await _dio.get('/categories');
     final data = response.data as Map<String, dynamic>;
-    final list = data['data'] as List<dynamic>;
+    final list = ((data['data'] as List<dynamic>?) ?? []);
     return list
         .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
         .toList();

@@ -109,7 +109,7 @@ class _CustomAssetFormScreenState
       'current_value': currentValue,
       'purchase_value': purchaseValue,
       if (_purchaseDate != null)
-        'purchase_date': _purchaseDate!.toIso8601String(),
+        'purchase_date': _purchaseDate!.toUtc().toIso8601String(),
       'monthly_income': monthlyIncome,
       if (_descriptionController.text.isNotEmpty)
         'description': _descriptionController.text.trim(),
@@ -151,7 +151,7 @@ class _CustomAssetFormScreenState
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     return Scaffold(
       appBar: AppBar(

@@ -1,0 +1,3055 @@
+basePath: /api/v1
+definitions:
+  github_com_financeos_api_internal_domain_entity.Account:
+    properties:
+      balance:
+        type: number
+      color:
+        type: string
+      created_at:
+        type: string
+      credit_limit:
+        type: number
+      icon:
+        type: string
+      id:
+        type: string
+      institution:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      type:
+        description: checking, savings, credit_card, investment, wallet, other
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Asset:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      current_price:
+        type: number
+      exchange:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price_updated_at:
+        type: string
+      ticker:
+        type: string
+      type:
+        description: stock, fii, etf, crypto, fixed_income, fund, other
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Budget:
+    properties:
+      amount:
+        type: number
+      category_color:
+        type: string
+      category_icon:
+        type: string
+      category_id:
+        type: string
+      category_name:
+        description: Joined fields
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      month:
+        type: integer
+      period:
+        description: weekly, monthly, yearly
+        type: string
+      threshold_pct:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      year:
+        type: integer
+    type: object
+  github_com_financeos_api_internal_domain_entity.Category:
+    properties:
+      color:
+        type: string
+      created_at:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      is_system:
+        type: boolean
+      name:
+        type: string
+      parent_id:
+        type: string
+      type:
+        description: income, expense, transfer
+        type: string
+      user_id:
+        description: null = system category
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.CustomAsset:
+    properties:
+      created_at:
+        type: string
+      current_value:
+        type: number
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      monthly_income:
+        type: number
+      name:
+        type: string
+      purchase_date:
+        type: string
+      purchase_value:
+        type: number
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.FamilyGroup:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      invite_code:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.FamilyMember:
+    properties:
+      group_id:
+        type: string
+      id:
+        type: string
+      joined_at:
+        type: string
+      permissions:
+        additionalProperties: true
+        type: object
+      user_email:
+        type: string
+      user_id:
+        type: string
+      user_name:
+        description: Joined fields
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Goal:
+    properties:
+      color:
+        type: string
+      created_at:
+        type: string
+      current_amount:
+        type: number
+      icon:
+        type: string
+      id:
+        type: string
+      is_achieved:
+        type: boolean
+      monthly_contribution:
+        type: number
+      name:
+        type: string
+      target_amount:
+        type: number
+      target_date:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.GoalContribution:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      date:
+        type: string
+      goal_id:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Holding:
+    properties:
+      asset_current_price:
+        type: number
+      asset_id:
+        type: string
+      asset_ticker:
+        description: Joined
+        type: string
+      avg_price:
+        type: number
+      created_at:
+        type: string
+      current_value:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+      portfolio_id:
+        type: string
+      quantity:
+        type: number
+      realized_pnl:
+        type: number
+      total_invested:
+        type: number
+      type:
+        type: string
+      unrealized_pnl:
+        type: number
+      unrealized_pnl_pct:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.InvestmentTransaction:
+    properties:
+      created_at:
+        type: string
+      date:
+        type: string
+      fees:
+        type: number
+      holding_id:
+        type: string
+      id:
+        type: string
+      notes:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: number
+      total:
+        type: number
+      type:
+        description: buy, sell, dividend, split, bonus
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Notification:
+    properties:
+      created_at:
+        type: string
+      data:
+        additionalProperties: true
+        type: object
+      id:
+        type: string
+      is_read:
+        type: boolean
+      message:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Portfolio:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Recurrence:
+    properties:
+      account_id:
+        type: string
+      account_name:
+        description: Joined fields
+        type: string
+      amount:
+        type: number
+      auto_launch:
+        type: boolean
+      category_id:
+        type: string
+      category_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      frequency:
+        description: daily, weekly, biweekly, monthly, yearly
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      next_due_date:
+        type: string
+      start_date:
+        type: string
+      type:
+        description: income, expense
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.Transaction:
+    properties:
+      account_id:
+        type: string
+      account_name:
+        description: Joined fields
+        type: string
+      ai_categorized:
+        type: boolean
+      ai_confidence:
+        type: number
+      amount:
+        type: number
+      category_color:
+        type: string
+      category_icon:
+        type: string
+      category_id:
+        type: string
+      category_name:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      import_id:
+        type: string
+      notes:
+        type: string
+      recurrence_id:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      transfer_pair_id:
+        type: string
+      type:
+        description: income, expense, transfer
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_financeos_api_internal_domain_entity.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      email:
+        type: string
+      email_verified:
+        type: boolean
+      id:
+        type: string
+      last_login_at:
+        type: string
+      name:
+        type: string
+      plan:
+        type: string
+      plan_expires_at:
+        type: string
+      timezone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.ContributeRequest:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      notes:
+        type: string
+    required:
+    - amount
+    - date
+    type: object
+  github_com_financeos_api_internal_usecase.CreateAccountRequest:
+    properties:
+      balance:
+        type: number
+      color:
+        type: string
+      credit_limit:
+        type: number
+      icon:
+        type: string
+      institution:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      type:
+        enum:
+        - checking
+        - savings
+        - credit_card
+        - investment
+        - wallet
+        - other
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateBudgetRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      month:
+        type: integer
+      period:
+        enum:
+        - weekly
+        - monthly
+        - yearly
+        type: string
+      threshold_pct:
+        type: number
+      year:
+        type: integer
+    required:
+    - amount
+    - period
+    type: object
+  github_com_financeos_api_internal_usecase.CreateCategoryRequest:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      parent_id:
+        type: string
+      type:
+        enum:
+        - income
+        - expense
+        - transfer
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateCustomAssetRequest:
+    properties:
+      current_value:
+        type: number
+      description:
+        type: string
+      monthly_income:
+        type: number
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      purchase_date:
+        type: string
+      purchase_value:
+        type: number
+      type:
+        type: string
+    required:
+    - current_value
+    - name
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateGoalRequest:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      monthly_contribution:
+        type: number
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      target_amount:
+        type: number
+      target_date:
+        type: string
+    required:
+    - name
+    - target_amount
+    type: object
+  github_com_financeos_api_internal_usecase.CreateHoldingRequest:
+    properties:
+      asset_id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateInvestmentTransactionRequest:
+    properties:
+      date:
+        type: string
+      fees:
+        type: number
+      notes:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: number
+      total:
+        type: number
+      type:
+        enum:
+        - buy
+        - sell
+        - dividend
+        - split
+        - bonus
+        type: string
+    required:
+    - date
+    - total
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreatePortfolioRequest:
+    properties:
+      description:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  github_com_financeos_api_internal_usecase.CreateRecurrenceRequest:
+    properties:
+      account_id:
+        type: string
+      amount:
+        type: number
+      auto_launch:
+        type: boolean
+      category_id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      frequency:
+        enum:
+        - daily
+        - weekly
+        - biweekly
+        - monthly
+        - yearly
+        type: string
+      start_date:
+        type: string
+      type:
+        enum:
+        - income
+        - expense
+        type: string
+    required:
+    - account_id
+    - amount
+    - frequency
+    - start_date
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateTransactionRequest:
+    properties:
+      account_id:
+        type: string
+      amount:
+        type: number
+      category_id:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      notes:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        enum:
+        - income
+        - expense
+        type: string
+    required:
+    - account_id
+    - amount
+    - date
+    - type
+    type: object
+  github_com_financeos_api_internal_usecase.CreateTransferRequest:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      description:
+        type: string
+      from_account_id:
+        type: string
+      to_account_id:
+        type: string
+    required:
+    - amount
+    - date
+    - from_account_id
+    - to_account_id
+    type: object
+  github_com_financeos_api_internal_usecase.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  github_com_financeos_api_internal_usecase.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateAccountRequest:
+    properties:
+      color:
+        type: string
+      credit_limit:
+        type: number
+      icon:
+        type: string
+      institution:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateBudgetRequest:
+    properties:
+      amount:
+        type: number
+      category_id:
+        type: string
+      month:
+        type: integer
+      period:
+        enum:
+        - weekly
+        - monthly
+        - yearly
+        type: string
+      threshold_pct:
+        type: number
+      year:
+        type: integer
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateCategoryRequest:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateCustomAssetRequest:
+    properties:
+      current_value:
+        type: number
+      description:
+        type: string
+      monthly_income:
+        type: number
+      name:
+        type: string
+      purchase_date:
+        type: string
+      purchase_value:
+        type: number
+      type:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateGoalRequest:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      monthly_contribution:
+        type: number
+      name:
+        maxLength: 255
+        minLength: 2
+        type: string
+      target_amount:
+        type: number
+      target_date:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateHoldingRequest:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdatePortfolioRequest:
+    properties:
+      description:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateRecurrenceRequest:
+    properties:
+      account_id:
+        type: string
+      amount:
+        type: number
+      auto_launch:
+        type: boolean
+      category_id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      frequency:
+        enum:
+        - daily
+        - weekly
+        - biweekly
+        - monthly
+        - yearly
+        type: string
+      is_active:
+        type: boolean
+      start_date:
+        type: string
+      type:
+        enum:
+        - income
+        - expense
+        type: string
+    type: object
+  github_com_financeos_api_internal_usecase.UpdateTransactionRequest:
+    properties:
+      category_id:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      notes:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  internal_handler.AIChatData:
+    properties:
+      response:
+        example: Você gastou R$1.500 em Alimentação este mês, 25% acima da média.
+        type: string
+    type: object
+  internal_handler.AIChatResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.AIChatData'
+    type: object
+  internal_handler.AIForecastResponse:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+    type: object
+  internal_handler.AccountListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Account'
+        type: array
+    type: object
+  internal_handler.AccountResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Account'
+    type: object
+  internal_handler.AccountSummaryData:
+    properties:
+      account_balances:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+      total_balance:
+        example: 15000
+        type: number
+    type: object
+  internal_handler.AccountSummaryResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.AccountSummaryData'
+    type: object
+  internal_handler.AssetSearchResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Asset'
+        type: array
+    type: object
+  internal_handler.AuthDataResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.AuthResponseBody'
+    type: object
+  internal_handler.AuthResponseBody:
+    properties:
+      access_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.User'
+    type: object
+  internal_handler.BudgetListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Budget'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.PaginationMeta'
+    type: object
+  internal_handler.BudgetProgressItem:
+    properties:
+      actual:
+        example: 150
+        type: number
+      budget_id:
+        example: uuid
+        type: string
+      category_name:
+        example: Alimentação
+        type: string
+      is_alert:
+        example: false
+        type: boolean
+      percentage:
+        example: 25
+        type: number
+      planned:
+        example: 600
+        type: number
+    type: object
+  internal_handler.BudgetProgressResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handler.BudgetProgressItem'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.PaginationMeta'
+    type: object
+  internal_handler.BudgetResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Budget'
+    type: object
+  internal_handler.CashflowResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handler.MonthlyCashflowItem'
+        type: array
+    type: object
+  internal_handler.CategoryExpense:
+    properties:
+      amount:
+        example: 350
+        type: number
+      category_id:
+        example: uuid
+        type: string
+      category_name:
+        example: Alimentação
+        type: string
+    type: object
+  internal_handler.CategoryListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Category'
+        type: array
+    type: object
+  internal_handler.CategoryResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Category'
+    type: object
+  internal_handler.CustomAssetListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.CustomAsset'
+        type: array
+    type: object
+  internal_handler.CustomAssetResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.CustomAsset'
+    type: object
+  internal_handler.DashboardOverviewData:
+    properties:
+      month_expense:
+        example: 1500
+        type: number
+      month_income:
+        example: 8000
+        type: number
+      net_balance:
+        example: 22850
+        type: number
+      recent_transactions:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Transaction'
+        type: array
+      top_categories:
+        items:
+          $ref: '#/definitions/internal_handler.CategoryExpense'
+        type: array
+    type: object
+  internal_handler.DashboardOverviewResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.DashboardOverviewData'
+    type: object
+  internal_handler.ErrorDetail:
+    properties:
+      code:
+        example: INVALID_INPUT
+        type: string
+      message:
+        example: name is required
+        type: string
+    type: object
+  internal_handler.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/internal_handler.ErrorDetail'
+    type: object
+  internal_handler.FamilyDashboardData:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.FamilyMember'
+        type: array
+      total_expense:
+        example: 3000
+        type: number
+      total_income:
+        example: 16000
+        type: number
+    type: object
+  internal_handler.FamilyDashboardResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.FamilyDashboardData'
+    type: object
+  internal_handler.FamilyGroupResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.FamilyGroup'
+    type: object
+  internal_handler.GoalContributionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.GoalContribution'
+    type: object
+  internal_handler.GoalListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Goal'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.PaginationMeta'
+    type: object
+  internal_handler.GoalProjectionItem:
+    properties:
+      estimated_date:
+        example: "2028-10-04"
+        type: string
+      goal_id:
+        example: uuid
+        type: string
+      goal_name:
+        example: Reserva de Emergência
+        type: string
+      months_to_goal:
+        example: 30
+        type: integer
+      progress_pct:
+        example: 1.67
+        type: number
+    type: object
+  internal_handler.GoalProjectionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_handler.GoalProjectionItem'
+        type: array
+    type: object
+  internal_handler.GoalResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Goal'
+    type: object
+  internal_handler.HoldingListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Holding'
+        type: array
+    type: object
+  internal_handler.HoldingResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Holding'
+    type: object
+  internal_handler.InvestmentTransactionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.InvestmentTransaction'
+        type: array
+    type: object
+  internal_handler.InvestmentTransactionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.InvestmentTransaction'
+    type: object
+  internal_handler.InviteCodeData:
+    properties:
+      invite_code:
+        example: ABCD1234
+        type: string
+    type: object
+  internal_handler.InviteCodeResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.InviteCodeData'
+    type: object
+  internal_handler.MessageData:
+    properties:
+      message:
+        example: logged out successfully
+        type: string
+    type: object
+  internal_handler.MessageResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.MessageData'
+    type: object
+  internal_handler.MonthlyCashflowItem:
+    properties:
+      balance:
+        example: 6500
+        type: number
+      expense:
+        example: 1500
+        type: number
+      income:
+        example: 8000
+        type: number
+      month:
+        example: 4
+        type: integer
+      year:
+        example: 2026
+        type: integer
+    type: object
+  internal_handler.NotificationListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Notification'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.NotificationMeta'
+    type: object
+  internal_handler.NotificationMeta:
+    properties:
+      unread_count:
+        example: 3
+        type: integer
+    type: object
+  internal_handler.PaginationMeta:
+    properties:
+      page:
+        example: 1
+        type: integer
+      page_size:
+        example: 20
+        type: integer
+      total:
+        example: 100
+        type: integer
+    type: object
+  internal_handler.PortfolioListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Portfolio'
+        type: array
+    type: object
+  internal_handler.PortfolioResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Portfolio'
+    type: object
+  internal_handler.RecurrenceListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Recurrence'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.PaginationMeta'
+    type: object
+  internal_handler.RecurrenceResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Recurrence'
+    type: object
+  internal_handler.TransactionListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Transaction'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_handler.PaginationMeta'
+    type: object
+  internal_handler.TransactionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Transaction'
+    type: object
+  internal_handler.TransactionSummaryData:
+    properties:
+      balance:
+        example: 6500
+        type: number
+      by_category:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+      top_categories:
+        items:
+          $ref: '#/definitions/internal_handler.CategoryExpense'
+        type: array
+      total_expense:
+        example: 1500
+        type: number
+      total_income:
+        example: 8000
+        type: number
+    type: object
+  internal_handler.TransactionSummaryResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.TransactionSummaryData'
+    type: object
+  internal_handler.TransferResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_financeos_api_internal_domain_entity.Transaction'
+        type: array
+    type: object
+  internal_handler.UpdatedData:
+    properties:
+      updated:
+        example: true
+        type: boolean
+    type: object
+  internal_handler.UpdatedResponse:
+    properties:
+      data:
+        $ref: '#/definitions/internal_handler.UpdatedData'
+    type: object
+host: localhost:8000
+info:
+  contact:
+    name: FinanceOS Support
+    url: https://github.com/financeos
+  description: API completa para gestão financeira pessoal — contas, transações, orçamentos,
+    investimentos, metas e IA.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: FinanceOS API
+  version: 1.0.0
+paths:
+  /accounts:
+    get:
+      description: Retorna todas as contas ativas do usuário autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AccountListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar contas
+      tags:
+      - Accounts
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova conta bancária, carteira ou cartão
+      parameters:
+      - description: Dados da conta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar conta
+      tags:
+      - Accounts
+  /accounts/{id}:
+    delete:
+      parameters:
+      - description: UUID da conta
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Desativar conta
+      tags:
+      - Accounts
+    get:
+      parameters:
+      - description: UUID da conta
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar conta por ID
+      tags:
+      - Accounts
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da conta
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar conta
+      tags:
+      - Accounts
+  /accounts/summary:
+    get:
+      description: Retorna saldo total e saldo por conta
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AccountSummaryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Resumo de saldo
+      tags:
+      - Accounts
+  /ai/chat:
+    post:
+      consumes:
+      - application/json
+      description: Conversa com o assistente financeiro alimentado por Claude
+      parameters:
+      - description: Mensagem (máx. 2000 chars)
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            message:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AIChatResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Assistente financeiro
+      tags:
+      - AI
+  /ai/portfolio-analysis:
+    get:
+      description: Insights sobre diversificação e performance (plano Pro)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AIForecastResponse'
+        "402":
+          description: Plano insuficiente
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Análise de portfólio com IA
+      tags:
+      - AI
+  /ai/spending-forecast:
+    get:
+      description: Análise preditiva de gastos com IA (plano Pro)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AIForecastResponse'
+        "402":
+          description: Plano insuficiente
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Previsão de gastos
+      tags:
+      - AI
+  /assets/search:
+    get:
+      parameters:
+      - description: 'Ticker ou nome (ex: PETR4)'
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AssetSearchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar ativos por ticker ou nome
+      tags:
+      - Investments
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Envia e-mail com link de redefinição (sempre retorna 200 por segurança)
+      parameters:
+      - description: E-mail
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      summary: Solicitar redefinição de senha
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentica o usuário e retorna tokens JWT
+      parameters:
+      - description: Credenciais
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AuthDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "401":
+          description: Credenciais inválidas
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      summary: Login
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Revoga os tokens do usuário e encerra a sessão
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            refresh_token:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Troca um refresh token expirado por um novo par de tokens
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            refresh_token:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.AuthDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "401":
+          description: Token inválido ou revogado
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      summary: Renovar tokens
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma conta e retorna tokens JWT + dados do usuário
+      parameters:
+      - description: Dados de registro
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.AuthDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "409":
+          description: E-mail já cadastrado
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      summary: Registrar novo usuário
+      tags:
+      - Auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Define uma nova senha usando o token recebido por e-mail
+      parameters:
+      - description: Token e nova senha (mín. 8 caracteres)
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+            token:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "400":
+          description: Token inválido ou senha fraca
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      summary: Redefinir senha
+      tags:
+      - Auth
+  /budgets:
+    get:
+      parameters:
+      - description: 'Mês (1-12, default: atual)'
+        in: query
+        name: month
+        type: integer
+      - description: 'Ano (default: atual)'
+        in: query
+        name: year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.BudgetListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar orçamentos
+      tags:
+      - Budgets
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do orçamento
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.BudgetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar orçamento
+      tags:
+      - Budgets
+  /budgets/{id}:
+    delete:
+      parameters:
+      - description: UUID do orçamento
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover orçamento
+      tags:
+      - Budgets
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do orçamento
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.BudgetResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar orçamento
+      tags:
+      - Budgets
+  /budgets/progress:
+    get:
+      description: Retorna planejado vs real por categoria
+      parameters:
+      - description: 'Mês (1-12, default: atual)'
+        in: query
+        name: month
+        type: integer
+      - description: 'Ano (default: atual)'
+        in: query
+        name: year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.BudgetProgressResponse'
+      security:
+      - BearerAuth: []
+      summary: Progresso dos orçamentos
+      tags:
+      - Budgets
+  /categories:
+    get:
+      description: Retorna categorias do sistema e categorias personalizadas do usuário
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.CategoryListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar categorias
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados da categoria
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.CategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar categoria
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      parameters:
+      - description: UUID da categoria
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover categoria
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da categoria
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.CategoryResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar categoria
+      tags:
+      - Categories
+  /custom-assets:
+    get:
+      description: Retorna imóveis, veículos e outros ativos cadastrados manualmente
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.CustomAssetListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar ativos personalizados
+      tags:
+      - Investments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do ativo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateCustomAssetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.CustomAssetResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar ativo personalizado
+      tags:
+      - Investments
+  /custom-assets/{id}:
+    delete:
+      parameters:
+      - description: UUID do ativo
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover ativo personalizado
+      tags:
+      - Investments
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do ativo
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateCustomAssetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.CustomAssetResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar ativo personalizado
+      tags:
+      - Investments
+  /dashboard/cashflow:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.CashflowResponse'
+      security:
+      - BearerAuth: []
+      summary: Cashflow dos últimos 12 meses
+      tags:
+      - Dashboard
+  /dashboard/overview:
+    get:
+      description: Retorna saldo líquido, receitas, despesas e top categorias
+      parameters:
+      - description: 'Mês (1-12, default: atual)'
+        in: query
+        name: month
+        type: integer
+      - description: 'Ano (default: atual)'
+        in: query
+        name: year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.DashboardOverviewResponse'
+      security:
+      - BearerAuth: []
+      summary: Visão geral do mês
+      tags:
+      - Dashboard
+  /family:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.FamilyGroupResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obter grupo familiar
+      tags:
+      - Family
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Nome do grupo
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            name:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.FamilyGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar grupo familiar
+      tags:
+      - Family
+  /family/dashboard:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.FamilyDashboardResponse'
+      security:
+      - BearerAuth: []
+      summary: Dashboard do grupo familiar
+      tags:
+      - Family
+  /family/invite:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.InviteCodeResponse'
+      security:
+      - BearerAuth: []
+      summary: Gerar código de convite
+      tags:
+      - Family
+  /family/join:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Código de convite
+        in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            invite_code:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.FamilyGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Entrar em grupo familiar via convite
+      tags:
+      - Family
+  /family/members/{id}:
+    delete:
+      parameters:
+      - description: UUID do membro
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Remover membro do grupo
+      tags:
+      - Family
+  /goals:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.GoalListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar metas
+      tags:
+      - Goals
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados da meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateGoalRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.GoalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar meta
+      tags:
+      - Goals
+  /goals/{id}:
+    delete:
+      parameters:
+      - description: UUID da meta
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover meta
+      tags:
+      - Goals
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da meta
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateGoalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.GoalResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar meta
+      tags:
+      - Goals
+  /goals/{id}/contribute:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da meta
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados do aporte
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.ContributeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.GoalContributionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Aportar na meta
+      tags:
+      - Goals
+  /goals/projections:
+    get:
+      description: Calcula meses restantes e data estimada de conclusão
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.GoalProjectionsResponse'
+      security:
+      - BearerAuth: []
+      summary: Projeção das metas
+      tags:
+      - Goals
+  /holdings/{id}:
+    delete:
+      parameters:
+      - description: UUID do holding
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover holding
+      tags:
+      - Investments
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do holding
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateHoldingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.HoldingResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar holding
+      tags:
+      - Investments
+  /holdings/{id}/transactions:
+    get:
+      parameters:
+      - description: UUID do holding
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.InvestmentTransactionListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar movimentações do holding
+      tags:
+      - Investments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do holding
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados da movimentação
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateInvestmentTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.InvestmentTransactionResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar movimentação (compra/venda/dividendo)
+      tags:
+      - Investments
+  /imports/csv:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Importa transações de arquivo CSV com mapeamento de colunas (plano
+        Pro)
+      parameters:
+      - description: Arquivo CSV
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: UUID da conta destino
+        in: formData
+        name: account_id
+        required: true
+        type: string
+      - description: JSON de mapeamento de colunas
+        in: formData
+        name: mapping
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "402":
+          description: Plano insuficiente
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Importar extrato CSV
+      tags:
+      - Imports
+  /imports/csv/preview:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Retorna as primeiras linhas do CSV para conferência (plano Pro)
+      parameters:
+      - description: Arquivo CSV
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "402":
+          description: Plano insuficiente
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Pré-visualizar CSV antes de importar
+      tags:
+      - Imports
+  /imports/ofx:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Importa transações a partir de arquivo OFX/QFX (plano Pro)
+      parameters:
+      - description: Arquivo OFX
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: UUID da conta destino
+        in: formData
+        name: account_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+        "402":
+          description: Plano insuficiente
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Importar extrato OFX
+      tags:
+      - Imports
+  /investment-transactions/{id}:
+    delete:
+      parameters:
+      - description: UUID da movimentação
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover movimentação de investimento
+      tags:
+      - Investments
+  /notifications:
+    delete:
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Remover todas as notificações
+      tags:
+      - Notifications
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.NotificationListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar notificações
+      tags:
+      - Notifications
+  /notifications/{id}/read:
+    put:
+      parameters:
+      - description: UUID da notificação
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.UpdatedResponse'
+      security:
+      - BearerAuth: []
+      summary: Marcar como lida
+      tags:
+      - Notifications
+  /notifications/read-all:
+    put:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.UpdatedResponse'
+      security:
+      - BearerAuth: []
+      summary: Marcar todas como lidas
+      tags:
+      - Notifications
+  /portfolios:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.PortfolioListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar portfólios
+      tags:
+      - Investments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do portfólio
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreatePortfolioRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.PortfolioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar portfólio
+      tags:
+      - Investments
+  /portfolios/{id}:
+    delete:
+      parameters:
+      - description: UUID do portfólio
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover portfólio
+      tags:
+      - Investments
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do portfólio
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdatePortfolioRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.PortfolioResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar portfólio
+      tags:
+      - Investments
+  /portfolios/{id}/holdings:
+    get:
+      description: Retorna holdings com P&L calculado
+      parameters:
+      - description: UUID do portfólio
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.HoldingListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar holdings do portfólio
+      tags:
+      - Investments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID do portfólio
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados do ativo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateHoldingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.HoldingResponse'
+      security:
+      - BearerAuth: []
+      summary: Adicionar holding ao portfólio
+      tags:
+      - Investments
+  /recurrences:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.RecurrenceListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar recorrências
+      tags:
+      - Recurrences
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados da recorrência
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateRecurrenceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.RecurrenceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar recorrência
+      tags:
+      - Recurrences
+  /recurrences/{id}:
+    delete:
+      parameters:
+      - description: UUID da recorrência
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover recorrência
+      tags:
+      - Recurrences
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da recorrência
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateRecurrenceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.RecurrenceResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar recorrência
+      tags:
+      - Recurrences
+  /transactions:
+    get:
+      description: Retorna transações paginadas com filtros opcionais
+      parameters:
+      - description: Data inicial (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: Data final (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: income | expense
+        in: query
+        name: type
+        type: string
+      - description: UUID da categoria
+        in: query
+        name: category_id
+        type: string
+      - description: UUID da conta
+        in: query
+        name: account_id
+        type: string
+      - description: Busca por descrição
+        in: query
+        name: search
+        type: string
+      - description: 'Página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Itens por página (default: 20)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.TransactionListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar transações
+      tags:
+      - Transactions
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados da transação
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar transação
+      tags:
+      - Transactions
+  /transactions/{id}:
+    delete:
+      parameters:
+      - description: UUID da transação
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.MessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remover transação
+      tags:
+      - Transactions
+    get:
+      parameters:
+      - description: UUID da transação
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.TransactionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar transação por ID
+      tags:
+      - Transactions
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID da transação
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Campos a atualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.UpdateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.TransactionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Atualizar transação
+      tags:
+      - Transactions
+  /transactions/summary:
+    get:
+      description: Agrega receitas, despesas e saldo do período
+      parameters:
+      - description: Data inicial (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: Data final (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.TransactionSummaryResponse'
+      security:
+      - BearerAuth: []
+      summary: Resumo de transações
+      tags:
+      - Transactions
+  /transactions/transfer:
+    post:
+      consumes:
+      - application/json
+      description: Cria par de transações (saída + entrada) entre contas
+      parameters:
+      - description: Dados da transferência
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_financeos_api_internal_usecase.CreateTransferRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.TransferResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Criar transferência
+      tags:
+      - Transactions
+securityDefinitions:
+  BearerAuth:
+    description: 'Digite: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

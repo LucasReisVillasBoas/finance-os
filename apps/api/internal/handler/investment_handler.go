@@ -22,6 +22,13 @@ func NewInvestmentHandler(uc usecase.InvestmentUseCase, logger *zap.Logger) *Inv
 }
 
 // ListPortfolios handles GET /api/v1/portfolios
+//
+//	@Summary		Listar portfólios
+//	@Tags			Investments
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	PortfolioListResponse
+//	@Router			/portfolios [get]
 func (h *InvestmentHandler) ListPortfolios(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -40,6 +47,16 @@ func (h *InvestmentHandler) ListPortfolios(c *gin.Context) {
 }
 
 // CreatePortfolio handles POST /api/v1/portfolios
+//
+//	@Summary		Criar portfólio
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreatePortfolioRequest	true	"Dados do portfólio"
+//	@Success		201	{object}	PortfolioResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/portfolios [post]
 func (h *InvestmentHandler) CreatePortfolio(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -64,6 +81,16 @@ func (h *InvestmentHandler) CreatePortfolio(c *gin.Context) {
 }
 
 // UpdatePortfolio handles PUT /api/v1/portfolios/:id
+//
+//	@Summary		Atualizar portfólio
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string							true	"UUID do portfólio"
+//	@Param			body	body	usecase.UpdatePortfolioRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	PortfolioResponse
+//	@Router			/portfolios/{id} [put]
 func (h *InvestmentHandler) UpdatePortfolio(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -98,6 +125,13 @@ func (h *InvestmentHandler) UpdatePortfolio(c *gin.Context) {
 }
 
 // DeletePortfolio handles DELETE /api/v1/portfolios/:id
+//
+//	@Summary		Remover portfólio
+//	@Tags			Investments
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do portfólio"
+//	@Success		200	{object}	MessageResponse
+//	@Router			/portfolios/{id} [delete]
 func (h *InvestmentHandler) DeletePortfolio(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -125,6 +159,15 @@ func (h *InvestmentHandler) DeletePortfolio(c *gin.Context) {
 }
 
 // ListHoldings handles GET /api/v1/portfolios/:id/holdings
+//
+//	@Summary		Listar holdings do portfólio
+//	@Description	Retorna holdings com P&L calculado
+//	@Tags			Investments
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do portfólio"
+//	@Success		200	{object}	HoldingListResponse
+//	@Router			/portfolios/{id}/holdings [get]
 func (h *InvestmentHandler) ListHoldings(c *gin.Context) {
 	portfolioID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -143,6 +186,16 @@ func (h *InvestmentHandler) ListHoldings(c *gin.Context) {
 }
 
 // CreateHolding handles POST /api/v1/portfolios/:id/holdings
+//
+//	@Summary		Adicionar holding ao portfólio
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string						true	"UUID do portfólio"
+//	@Param			body	body	usecase.CreateHoldingRequest	true	"Dados do ativo"
+//	@Success		201	{object}	HoldingResponse
+//	@Router			/portfolios/{id}/holdings [post]
 func (h *InvestmentHandler) CreateHolding(c *gin.Context) {
 	portfolioID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -167,6 +220,16 @@ func (h *InvestmentHandler) CreateHolding(c *gin.Context) {
 }
 
 // UpdateHolding handles PUT /api/v1/holdings/:id
+//
+//	@Summary		Atualizar holding
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string						true	"UUID do holding"
+//	@Param			body	body	usecase.UpdateHoldingRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	HoldingResponse
+//	@Router			/holdings/{id} [put]
 func (h *InvestmentHandler) UpdateHolding(c *gin.Context) {
 	holdingID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -195,6 +258,13 @@ func (h *InvestmentHandler) UpdateHolding(c *gin.Context) {
 }
 
 // DeleteHolding handles DELETE /api/v1/holdings/:id
+//
+//	@Summary		Remover holding
+//	@Tags			Investments
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do holding"
+//	@Success		200	{object}	MessageResponse
+//	@Router			/holdings/{id} [delete]
 func (h *InvestmentHandler) DeleteHolding(c *gin.Context) {
 	holdingID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -216,6 +286,14 @@ func (h *InvestmentHandler) DeleteHolding(c *gin.Context) {
 }
 
 // ListInvestmentTransactions handles GET /api/v1/holdings/:id/transactions
+//
+//	@Summary		Listar movimentações do holding
+//	@Tags			Investments
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do holding"
+//	@Success		200	{object}	InvestmentTransactionListResponse
+//	@Router			/holdings/{id}/transactions [get]
 func (h *InvestmentHandler) ListInvestmentTransactions(c *gin.Context) {
 	holdingID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -234,6 +312,16 @@ func (h *InvestmentHandler) ListInvestmentTransactions(c *gin.Context) {
 }
 
 // CreateInvestmentTransaction handles POST /api/v1/holdings/:id/transactions
+//
+//	@Summary		Registrar movimentação (compra/venda/dividendo)
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string										true	"UUID do holding"
+//	@Param			body	body	usecase.CreateInvestmentTransactionRequest	true	"Dados da movimentação"
+//	@Success		201	{object}	InvestmentTransactionResponse
+//	@Router			/holdings/{id}/transactions [post]
 func (h *InvestmentHandler) CreateInvestmentTransaction(c *gin.Context) {
 	holdingID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -262,6 +350,13 @@ func (h *InvestmentHandler) CreateInvestmentTransaction(c *gin.Context) {
 }
 
 // DeleteInvestmentTransaction handles DELETE /api/v1/investment-transactions/:id
+//
+//	@Summary		Remover movimentação de investimento
+//	@Tags			Investments
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da movimentação"
+//	@Success		200	{object}	MessageResponse
+//	@Router			/investment-transactions/{id} [delete]
 func (h *InvestmentHandler) DeleteInvestmentTransaction(c *gin.Context) {
 	txID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -279,6 +374,15 @@ func (h *InvestmentHandler) DeleteInvestmentTransaction(c *gin.Context) {
 }
 
 // SearchAssets handles GET /api/v1/assets/search?q=PETR4
+//
+//	@Summary		Buscar ativos por ticker ou nome
+//	@Tags			Investments
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			q	query	string	true	"Ticker ou nome (ex: PETR4)"
+//	@Success		200	{object}	AssetSearchResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/assets/search [get]
 func (h *InvestmentHandler) SearchAssets(c *gin.Context) {
 	q := c.Query("q")
 	if q == "" {
@@ -297,6 +401,14 @@ func (h *InvestmentHandler) SearchAssets(c *gin.Context) {
 }
 
 // ListCustomAssets handles GET /api/v1/custom-assets
+//
+//	@Summary		Listar ativos personalizados
+//	@Description	Retorna imóveis, veículos e outros ativos cadastrados manualmente
+//	@Tags			Investments
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	CustomAssetListResponse
+//	@Router			/custom-assets [get]
 func (h *InvestmentHandler) ListCustomAssets(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -315,6 +427,15 @@ func (h *InvestmentHandler) ListCustomAssets(c *gin.Context) {
 }
 
 // CreateCustomAsset handles POST /api/v1/custom-assets
+//
+//	@Summary		Criar ativo personalizado
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateCustomAssetRequest	true	"Dados do ativo"
+//	@Success		201	{object}	CustomAssetResponse
+//	@Router			/custom-assets [post]
 func (h *InvestmentHandler) CreateCustomAsset(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -339,6 +460,16 @@ func (h *InvestmentHandler) CreateCustomAsset(c *gin.Context) {
 }
 
 // UpdateCustomAsset handles PUT /api/v1/custom-assets/:id
+//
+//	@Summary		Atualizar ativo personalizado
+//	@Tags			Investments
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string							true	"UUID do ativo"
+//	@Param			body	body	usecase.UpdateCustomAssetRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	CustomAssetResponse
+//	@Router			/custom-assets/{id} [put]
 func (h *InvestmentHandler) UpdateCustomAsset(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -373,6 +504,13 @@ func (h *InvestmentHandler) UpdateCustomAsset(c *gin.Context) {
 }
 
 // DeleteCustomAsset handles DELETE /api/v1/custom-assets/:id
+//
+//	@Summary		Remover ativo personalizado
+//	@Tags			Investments
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID do ativo"
+//	@Success		200	{object}	MessageResponse
+//	@Router			/custom-assets/{id} [delete]
 func (h *InvestmentHandler) DeleteCustomAsset(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

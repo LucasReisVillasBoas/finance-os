@@ -23,7 +23,7 @@ class _TransactionFiltersScreenState
   List<String> _selectedCategoryIds = [];
   List<String> _selectedAccountIds = [];
 
-  final _dateFormat = DateFormat('dd/MM/yyyy');
+  final _dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
   @override
   void initState() {
@@ -70,10 +70,10 @@ class _TransactionFiltersScreenState
   void _applyFilters() {
     final filter = TransactionFilter(
       startDate: _startDate != null
-          ? DateFormat('yyyy-MM-dd').format(_startDate!)
+          ? DateFormat('yyyy-MM-dd', 'pt_BR').format(_startDate!)
           : null,
       endDate: _endDate != null
-          ? DateFormat('yyyy-MM-dd').format(_endDate!)
+          ? DateFormat('yyyy-MM-dd', 'pt_BR').format(_endDate!)
           : null,
       type: _selectedType,
       categoryId: _selectedCategoryIds.isNotEmpty

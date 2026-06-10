@@ -46,7 +46,7 @@ class InvestmentTransactionModel {
         if (price != null) 'price': price,
         'fees': fees,
         'total': total,
-        'date': date.toIso8601String(),
+        'date': date.toUtc().toIso8601String(),
         if (notes != null) 'notes': notes,
       };
 

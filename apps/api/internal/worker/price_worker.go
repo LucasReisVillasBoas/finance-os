@@ -10,6 +10,7 @@ import (
 	"time"
 
 	domainrepo "github.com/financeos/api/internal/domain/repository"
+	"github.com/financeos/api/pkg/brapi"
 	"go.uber.org/zap"
 )
 
@@ -19,15 +20,17 @@ type PriceWorker struct {
 	holdingRepo domainrepo.HoldingRepository
 	logger      *zap.Logger
 	httpClient  *http.Client
+	brapiSvc    *brapi.BrapiService
 }
 
 // NewPriceWorker creates a new PriceWorker.
-func NewPriceWorker(ar domainrepo.AssetRepository, hr domainrepo.HoldingRepository, l *zap.Logger) *PriceWorker {
+func NewPriceWorker(ar domainrepo.AssetRepository, hr domainrepo.HoldingRepository, l *zap.Logger, brapiSvc *brapi.BrapiService) *PriceWorker {
 	return &PriceWorker{
-		assetRepo:  ar,
+		assetRepo:   ar,
 		holdingRepo: hr,
-		logger:     l,
-		httpClient: &http.Client{Timeout: 10 * time.Second},
+		logger:      l,
+		httpClient:  &http.Client{Timeout: 10 * time.Second},
+		brapiSvc:    brapiSvc,
 	}
 }
 
@@ -44,14 +47,6 @@ func (w *PriceWorker) Run(ctx context.Context) {
 			return
 		}
 	}
-}
-
-// brapiResponse matches the BRAPI quote API response.
-type brapiResponse struct {
-	Results []struct {
-		Symbol             string  `json:"symbol"`
-		RegularMarketPrice float64 `json:"regularMarketPrice"`
-	} `json:"results"`
 }
 
 // coinGeckoResponse matches CoinGecko simple/price API response.
@@ -83,7 +78,11 @@ func (w *PriceWorker) updatePrices(ctx context.Context) {
 		case asset.Type == "crypto":
 			newPrice, fetchErr = w.fetchCryptoPrice(ctx, *asset.Ticker)
 		case exchange == "B3":
-			newPrice, fetchErr = w.fetchB3Price(ctx, *asset.Ticker)
+			if w.brapiSvc != nil {
+				newPrice, fetchErr = w.brapiSvc.FetchPrice(ctx, *asset.Ticker)
+			} else {
+				continue
+			}
 		default:
 			// Skip assets with no known price source
 			continue
@@ -115,41 +114,6 @@ func (w *PriceWorker) updatePrices(ctx context.Context) {
 	if updated > 0 {
 		w.logger.Info("price_worker: updated prices", zap.Int("count", updated))
 	}
-}
-
-// fetchB3Price fetches a stock price from BRAPI.
-func (w *PriceWorker) fetchB3Price(ctx context.Context, ticker string) (float64, error) {
-	url := fmt.Sprintf("https://brapi.dev/api/quote/%s", ticker)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return 0, fmt.Errorf("fetchB3Price: new request: %w", err)
-	}
-
-	resp, err := w.httpClient.Do(req)
-	if err != nil {
-		return 0, fmt.Errorf("fetchB3Price: do request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("fetchB3Price: unexpected status %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, fmt.Errorf("fetchB3Price: read body: %w", err)
-	}
-
-	var brapiResp brapiResponse
-	if err := json.Unmarshal(body, &brapiResp); err != nil {
-		return 0, fmt.Errorf("fetchB3Price: unmarshal: %w", err)
-	}
-
-	if len(brapiResp.Results) == 0 {
-		return 0, fmt.Errorf("fetchB3Price: no results for ticker %s", ticker)
-	}
-
-	return brapiResp.Results[0].RegularMarketPrice, nil
 }
 
 // fetchCryptoPrice fetches a cryptocurrency price from CoinGecko.

@@ -21,6 +21,53 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
         () => ref.read(investmentsProvider.notifier).loadPortfolios());
   }
 
+  Future<void> _showCreatePortfolioDialog(BuildContext context) async {
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Novo portfólio'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: nameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Nome do portfólio',
+              hintText: 'Ex: Renda Variável',
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Informe um nome' : null,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(ctx).pop(true);
+              }
+            },
+            child: const Text('Criar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await ref.read(investmentsProvider.notifier).createPortfolio({
+        'name': nameController.text.trim(),
+      });
+      nameController.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(investmentsProvider);
@@ -30,6 +77,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
       appBar: AppBar(
         title: const Text('Carteira'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.create_new_folder_outlined),
+            tooltip: 'Novo portfólio',
+            onPressed: () => _showCreatePortfolioDialog(context),
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Nova operação',
@@ -89,7 +141,31 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
-                        if (state.holdings.isEmpty)
+                        if (state.portfolios.isEmpty)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.account_balance_wallet_outlined,
+                                      size: 48, color: Colors.grey),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Nenhum portfólio encontrado.\nCrie um portfólio para começar.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: () => _showCreatePortfolioDialog(context),
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('Criar portfólio'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else if (state.holdings.isEmpty)
                           const Center(
                             child: Padding(
                               padding: EdgeInsets.all(32),

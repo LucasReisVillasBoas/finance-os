@@ -4,13 +4,16 @@
 API_DIR := apps/api
 WEB_DIR := apps/web
 MIGRATIONS_DIR := packages/database/migrations
-DB_URL ?= postgresql://financeos:financeos@localhost:5432/financeos
+DB_URL ?= postgresql://financeos:financeos@localhost:5434/financeos?sslmode=disable
+MIGRATE := $(shell which migrate 2>/dev/null || echo "$(HOME)/go/bin/migrate")
 
 # Default target
 help:
 	@echo "FinanceOS - Available commands:"
 	@echo ""
-	@echo "  make dev          - Start all services with docker-compose"
+	@echo "  make dev          - Start all services with docker-compose (sem hot reload)"
+	@echo "  make dev-backend  - Start only backend services (postgres, redis, api, adminer)"
+	@echo "  make web          - Run Flutter com hot reload no host (use junto com dev-backend)"
 	@echo "  make migrate      - Run database migrations"
 	@echo "  make migrate-down - Rollback last migration"
 	@echo "  make seed         - Seed initial data"
@@ -19,8 +22,13 @@ help:
 	@echo "  make lint         - Run linters (go vet + dart analyze)"
 	@echo "  make clean        - Remove build artifacts"
 	@echo ""
+	@echo "Workflow com hot reload:"
+	@echo "  1. make dev-backend   (inicia postgres + redis + api)"
+	@echo "  2. make web           (inicia Flutter no host com hot reload)"
+	@echo "     -> pressione 'r' para hot reload, 'R' para hot restart"
+	@echo ""
 
-# Start development environment
+# Start development environment (all services including web in Docker — no hot reload)
 dev:
 	docker-compose up -d
 	@echo "Services started:"
@@ -29,6 +37,24 @@ dev:
 	@echo "  Adminer:  http://localhost:8080"
 	@echo "  Postgres: localhost:5432"
 	@echo "  Redis:    localhost:6379"
+
+# Start only backend services (postgres, redis, api, adminer) — use with 'make web' for hot reload
+dev-backend:
+	docker-compose up -d postgres redis api adminer
+	@echo "Backend services started:"
+	@echo "  API:      http://localhost:8000"
+	@echo "  Adminer:  http://localhost:8080"
+	@echo "  Postgres: localhost:5434"
+	@echo "  Redis:    localhost:6379"
+	@echo ""
+	@echo "Now run 'make web' in another terminal for Flutter hot reload."
+
+# Run Flutter web on the host with hot reload
+web:
+	cd $(WEB_DIR) && flutter run -d web-server \
+		--web-port 3000 \
+		--web-hostname 0.0.0.0 \
+		--dart-define=API_BASE_URL=http://localhost:8000
 
 dev-down:
 	docker-compose down
@@ -39,19 +65,19 @@ dev-logs:
 # Run database migrations
 migrate:
 	@which migrate > /dev/null 2>&1 || (echo "Installing golang-migrate..." && go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
-	migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
+	$(MIGRATE) -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
 	@echo "Migrations applied successfully"
 
 # Rollback last migration
 migrate-down:
 	@which migrate > /dev/null 2>&1 || (echo "Installing golang-migrate..." && go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
-	migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down 1
+	$(MIGRATE) -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down 1
 	@echo "Migration rolled back"
 
 # Seed initial data
 seed:
 	@which migrate > /dev/null 2>&1 || (echo "Installing golang-migrate..." && go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)
-	migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
+	$(MIGRATE) -path $(MIGRATIONS_DIR) -database "$(DB_URL)" up
 	@echo "Seed data applied"
 
 # Run all tests

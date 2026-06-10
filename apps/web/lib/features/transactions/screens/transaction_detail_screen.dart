@@ -128,7 +128,7 @@ class _TransactionDetailScreenState
     final tx = _transaction!;
     final numberFormat =
         NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     Color typeColor;
     String amountPrefix;

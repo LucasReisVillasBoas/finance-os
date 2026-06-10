@@ -90,5 +90,5 @@ class FamilyNotifier extends StateNotifier<FamilyState> {
 
 final familyProvider =
     StateNotifierProvider<FamilyNotifier, FamilyState>(
-  (ref) => FamilyNotifier(ref.read(familyRepositoryProvider)),
+  (ref) => FamilyNotifier(ref.watch(familyRepositoryProvider)),
 );

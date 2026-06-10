@@ -69,7 +69,7 @@ class NotificationModel {
         'title': title,
         'message': message,
         'is_read': isRead,
-        'created_at': createdAt.toIso8601String(),
+        'created_at': createdAt.toUtc().toIso8601String(),
       };
 
   NotificationModel copyWith({bool? isRead}) {

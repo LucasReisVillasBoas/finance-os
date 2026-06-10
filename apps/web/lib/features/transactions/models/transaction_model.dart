@@ -80,7 +80,7 @@ class TransactionModel {
         'amount': amount,
         if (description != null) 'description': description,
         if (notes != null) 'notes': notes,
-        'date': date.toIso8601String(),
+        'date': date.toUtc().toIso8601String(),
         'tags': tags,
         if (transferPairId != null) 'transfer_pair_id': transferPairId,
         'ai_categorized': aiCategorized,

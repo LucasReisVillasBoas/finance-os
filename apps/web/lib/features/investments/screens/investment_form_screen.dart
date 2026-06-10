@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,9 +24,12 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
   final _feesController = TextEditingController(text: '0');
   final _notesController = TextEditingController();
 
+  Timer? _debounce;
+
   String _transactionType = 'buy';
   DateTime _selectedDate = DateTime.now();
   String? _selectedAssetId;
+  String _holdingType = 'stock';
   bool _isSubmitting = false;
   bool _showSuggestions = false;
 
@@ -36,8 +41,19 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
     {'value': 'bonus', 'label': 'Bonificação'},
   ];
 
+  final _holdingTypes = [
+    {'value': 'stock', 'label': 'Ação'},
+    {'value': 'fii', 'label': 'FII'},
+    {'value': 'etf', 'label': 'ETF'},
+    {'value': 'crypto', 'label': 'Cripto'},
+    {'value': 'fixed_income', 'label': 'Renda Fixa'},
+    {'value': 'fund', 'label': 'Fundo'},
+    {'value': 'other', 'label': 'Outro'},
+  ];
+
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     _qtyController.dispose();
     _priceController.dispose();
@@ -58,13 +74,18 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
     }
   }
 
-  Future<void> _onSearchChanged(String query) async {
+  void _onSearchChanged(String query) {
+    _debounce?.cancel();
     if (query.length < 2) {
-      setState(() => _showSuggestions = false);
+      setState(() {
+        _showSuggestions = false;
+      });
       return;
     }
-    await ref.read(investmentsProvider.notifier).searchAssets(query);
-    setState(() => _showSuggestions = true);
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      ref.read(investmentsProvider.notifier).searchAssets(query);
+      setState(() => _showSuggestions = true);
+    });
   }
 
   void _selectAsset(AssetModel asset) {
@@ -87,12 +108,10 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
       return;
     }
 
-    // Determine holding id - use selectedPortfolioId to find or use provided holdingId
-    final holdingIdToUse = widget.holdingId ?? state.selectedPortfolioId;
-    if (holdingIdToUse == null) {
+    final portfolioId = state.selectedPortfolioId;
+    if (portfolioId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Selecione um portfólio e uma posição primeiro.')),
+        const SnackBar(content: Text('Nenhum portfólio selecionado.')),
       );
       return;
     }
@@ -103,23 +122,46 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
         double.tryParse(_feesController.text.replaceAll(',', '.')) ?? 0.0;
     final total = (qty ?? 0) * (price ?? 0) + fees;
 
+    setState(() => _isSubmitting = true);
+
+    // If we don't have an existing holdingId, create a holding first.
+    String? holdingId = widget.holdingId;
+    if (holdingId == null) {
+      final assetName = _searchController.text.trim();
+      final holding = await ref
+          .read(investmentsProvider.notifier)
+          .createHolding(portfolioId, {
+        'name': assetName.isNotEmpty ? assetName : 'Ativo',
+        'type': _holdingType,
+        if (_selectedAssetId != null) 'asset_id': _selectedAssetId,
+      });
+      if (holding == null) {
+        setState(() => _isSubmitting = false);
+        final err = ref.read(investmentsProvider).error;
+        if (mounted && err != null) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(err)));
+        }
+        return;
+      }
+      holdingId = holding.id;
+    }
+
     final payload = <String, dynamic>{
       'type': _transactionType,
       'quantity': qty,
       'price': price,
       'fees': fees,
       'total': total,
-      'date': _selectedDate.toIso8601String(),
-      'asset_id': _selectedAssetId,
+      'date': _selectedDate.toUtc().toIso8601String(),
+      if (_selectedAssetId != null) 'asset_id': _selectedAssetId,
       if (_notesController.text.isNotEmpty) 'notes': _notesController.text,
     };
-    // Remove null values
     payload.removeWhere((_, v) => v == null);
 
-    setState(() => _isSubmitting = true);
     final tx = await ref
         .read(investmentsProvider.notifier)
-        .createTransaction(holdingIdToUse, payload);
+        .createTransaction(holdingId, payload);
     setState(() => _isSubmitting = false);
 
     if (tx != null && mounted) {
@@ -139,7 +181,7 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(investmentsProvider);
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     return Scaffold(
       appBar: AppBar(
@@ -188,6 +230,29 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
+
+              // Asset type (only shown when creating a new holding)
+              if (widget.holdingId == null) ...[
+                const Text('Tipo de ativo',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 4),
+                DropdownButtonFormField<String>(
+                  value: _holdingType,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  items: _holdingTypes
+                      .map((t) => DropdownMenuItem<String>(
+                            value: t['value'],
+                            child: Text(t['label']!),
+                          ))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setState(() => _holdingType = v);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Transaction type
               const Text('Tipo de operação',

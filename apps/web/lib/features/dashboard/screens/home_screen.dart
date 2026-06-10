@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../accounts/models/account_model.dart';
 import '../../accounts/providers/accounts_provider.dart';
 import '../models/dashboard_model.dart';
 import '../providers/dashboard_provider.dart';
@@ -16,8 +17,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -33,62 +32,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final accountsState = ref.watch(accountsProvider);
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          _DashboardBody(
-            dashState: dashState,
-            accountsState: accountsState,
-          ),
-          // Placeholder tabs — navigated via routes
-          const _PlaceholderTab(label: 'Transações'),
-          const _PlaceholderTab(label: 'Contas'),
-          const _PlaceholderTab(label: 'Orçamentos'),
-          const _PlaceholderTab(label: 'Configurações'),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          switch (index) {
-            case 1:
-              context.go('/transactions');
-            case 2:
-              context.go('/accounts');
-            case 3:
-              context.go('/budgets');
-            case 4:
-              context.go('/settings');
-            default:
-              setState(() => _currentIndex = index);
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.swap_horiz), label: 'Transações'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet), label: 'Contas'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.pie_chart), label: 'Orçamentos'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Config'),
-        ],
+      body: _DashboardBody(
+        dashState: dashState,
+        accountsState: accountsState,
       ),
     );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text(label));
   }
 }
 
@@ -426,10 +374,10 @@ class _MonthSelector extends ConsumerWidget {
 class _AccountMiniCard extends StatelessWidget {
   const _AccountMiniCard({required this.account});
 
-  final dynamic account;
+  final AccountModel account;
 
   String get _typeIcon {
-    switch (account.type as String) {
+    switch (account.type) {
       case 'checking':
         return '🏦';
       case 'savings':
@@ -448,7 +396,7 @@ class _AccountMiniCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final balance = account.balance as double;
+    final balance = account.balance;
     final isNegative = balance < 0;
 
     return Container(
@@ -470,7 +418,7 @@ class _AccountMiniCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                account.name as String,
+                account.name,
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 maxLines: 1,
@@ -780,7 +728,7 @@ class _QuickActions extends StatelessWidget {
                   icon: Icons.trending_up,
                   label: 'Investimentos',
                   color: Colors.purple,
-                  onTap: () {},
+                  onTap: () => context.go('/investments'),
                 ),
               ),
             ],
@@ -903,7 +851,7 @@ class _RecentTransactionTile extends StatelessWidget {
   String _formatDate(String dateStr) {
     try {
       final dt = DateTime.parse(dateStr);
-      return DateFormat('dd/MM/yy').format(dt);
+      return DateFormat('dd/MM/yy', 'pt_BR').format(dt);
     } catch (_) {
       return dateStr;
     }

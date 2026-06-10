@@ -21,6 +21,13 @@ func NewGoalHandler(uc usecase.GoalUseCase, logger *zap.Logger) *GoalHandler {
 }
 
 // List returns all goals for the authenticated user.
+//
+//	@Summary		Listar metas
+//	@Tags			Goals
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	GoalListResponse
+//	@Router			/goals [get]
 func (h *GoalHandler) List(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -39,6 +46,16 @@ func (h *GoalHandler) List(c *gin.Context) {
 }
 
 // Create creates a new goal.
+//
+//	@Summary		Criar meta
+//	@Tags			Goals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body	usecase.CreateGoalRequest	true	"Dados da meta"
+//	@Success		201	{object}	GoalResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/goals [post]
 func (h *GoalHandler) Create(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -63,6 +80,17 @@ func (h *GoalHandler) Create(c *gin.Context) {
 }
 
 // Update updates an existing goal.
+//
+//	@Summary		Atualizar meta
+//	@Tags			Goals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string					true	"UUID da meta"
+//	@Param			body	body	usecase.UpdateGoalRequest	true	"Campos a atualizar"
+//	@Success		200	{object}	GoalResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/goals/{id} [put]
 func (h *GoalHandler) Update(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -97,6 +125,15 @@ func (h *GoalHandler) Update(c *gin.Context) {
 }
 
 // Delete removes a goal.
+//
+//	@Summary		Remover meta
+//	@Tags			Goals
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path	string	true	"UUID da meta"
+//	@Success		204	"No Content"
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/goals/{id} [delete]
 func (h *GoalHandler) Delete(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -124,6 +161,17 @@ func (h *GoalHandler) Delete(c *gin.Context) {
 }
 
 // Contribute adds a contribution to a goal.
+//
+//	@Summary		Aportar na meta
+//	@Tags			Goals
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path	string						true	"UUID da meta"
+//	@Param			body	body	usecase.ContributeRequest	true	"Dados do aporte"
+//	@Success		201	{object}	GoalContributionResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/goals/{id}/contribute [post]
 func (h *GoalHandler) Contribute(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {
@@ -158,6 +206,14 @@ func (h *GoalHandler) Contribute(c *gin.Context) {
 }
 
 // GetProjections returns projections for all goals.
+//
+//	@Summary		Projeção das metas
+//	@Description	Calcula meses restantes e data estimada de conclusão
+//	@Tags			Goals
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	GoalProjectionsResponse
+//	@Router			/goals/projections [get]
 func (h *GoalHandler) GetProjections(c *gin.Context) {
 	userID, err := uuid.Parse(c.GetString("user_id"))
 	if err != nil {

@@ -75,6 +75,9 @@ func (r *customAssetRepository) FindByUserID(ctx context.Context, userID uuid.UU
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("customAssetRepository.FindByUserID rows: %w", err)
 	}
+	if assets == nil {
+		assets = []*entity.CustomAsset{}
+	}
 	return assets, nil
 }
 

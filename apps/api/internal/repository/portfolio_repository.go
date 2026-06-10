@@ -74,6 +74,9 @@ func (r *portfolioRepository) FindByUserID(ctx context.Context, userID uuid.UUID
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("portfolioRepository.FindByUserID rows: %w", err)
 	}
+	if portfolios == nil {
+		portfolios = []*entity.Portfolio{}
+	}
 	return portfolios, nil
 }
 

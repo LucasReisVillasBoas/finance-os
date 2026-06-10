@@ -22,6 +22,15 @@ func NewAccountHandler(uc usecase.AccountUseCase, logger *zap.Logger) *AccountHa
 }
 
 // List handles GET /api/v1/accounts
+//
+//	@Summary		Listar contas
+//	@Description	Retorna todas as contas ativas do usuário autenticado
+//	@Tags			Accounts
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	AccountListResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Router			/accounts [get]
 func (h *AccountHandler) List(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -40,6 +49,18 @@ func (h *AccountHandler) List(c *gin.Context) {
 }
 
 // Create handles POST /api/v1/accounts
+//
+//	@Summary		Criar conta
+//	@Description	Cria uma nova conta bancária, carteira ou cartão
+//	@Tags			Accounts
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			body	body		usecase.CreateAccountRequest	true	"Dados da conta"
+//	@Success		201		{object}	AccountResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Router			/accounts [post]
 func (h *AccountHandler) Create(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -64,6 +85,17 @@ func (h *AccountHandler) Create(c *gin.Context) {
 }
 
 // GetByID handles GET /api/v1/accounts/:id
+//
+//	@Summary		Buscar conta por ID
+//	@Tags			Accounts
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"UUID da conta"
+//	@Success		200	{object}	AccountResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/accounts/{id} [get]
 func (h *AccountHandler) GetByID(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -92,6 +124,18 @@ func (h *AccountHandler) GetByID(c *gin.Context) {
 }
 
 // Update handles PUT /api/v1/accounts/:id
+//
+//	@Summary		Atualizar conta
+//	@Tags			Accounts
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id		path		string							true	"UUID da conta"
+//	@Param			body	body		usecase.UpdateAccountRequest	true	"Campos a atualizar"
+//	@Success		200		{object}	AccountResponse
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		404		{object}	ErrorResponse
+//	@Router			/accounts/{id} [put]
 func (h *AccountHandler) Update(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -126,6 +170,15 @@ func (h *AccountHandler) Update(c *gin.Context) {
 }
 
 // Delete handles DELETE /api/v1/accounts/:id
+//
+//	@Summary		Desativar conta
+//	@Tags			Accounts
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"UUID da conta"
+//	@Success		200	{object}	MessageResponse
+//	@Failure		404	{object}	ErrorResponse
+//	@Router			/accounts/{id} [delete]
 func (h *AccountHandler) Delete(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {
@@ -153,6 +206,15 @@ func (h *AccountHandler) Delete(c *gin.Context) {
 }
 
 // Summary handles GET /api/v1/accounts/summary
+//
+//	@Summary		Resumo de saldo
+//	@Description	Retorna saldo total e saldo por conta
+//	@Tags			Accounts
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	AccountSummaryResponse
+//	@Failure		401	{object}	ErrorResponse
+//	@Router			/accounts/summary [get]
 func (h *AccountHandler) Summary(c *gin.Context) {
 	userID, err := parseUserID(c)
 	if err != nil {

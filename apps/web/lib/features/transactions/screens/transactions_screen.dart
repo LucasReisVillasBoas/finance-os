@@ -93,7 +93,7 @@ class _TransactionGroupedList extends StatelessWidget {
   Map<String, List<TransactionModel>> _groupByDate() {
     final groups = <String, List<TransactionModel>>{};
     for (final tx in transactions) {
-      final key = DateFormat('yyyy-MM-dd').format(tx.date);
+      final key = DateFormat('yyyy-MM-dd', 'pt_BR').format(tx.date);
       groups.putIfAbsent(key, () => []).add(tx);
     }
     return groups;

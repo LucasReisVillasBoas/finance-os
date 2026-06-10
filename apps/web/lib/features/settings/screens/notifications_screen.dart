@@ -12,7 +12,7 @@ class NotificationsScreen extends ConsumerWidget {
     if (diff.inMinutes < 60) return '${diff.inMinutes}min atrás';
     if (diff.inHours < 24) return '${diff.inHours}h atrás';
     if (diff.inDays < 7) return '${diff.inDays}d atrás';
-    return DateFormat('dd/MM/yyyy').format(date);
+    return DateFormat('dd/MM/yyyy', 'pt_BR').format(date);
   }
 
   @override
@@ -30,25 +30,29 @@ class NotificationsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 8),
-              Text('Erro ao carregar notificações'),
-              TextButton(
-                onPressed: () =>
-                    ref.read(notificationsProvider.notifier).load(),
-                child: const Text('Tentar novamente'),
+      body: Builder(
+        builder: (context) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 8),
+                  const Text('Erro ao carregar notificações'),
+                  TextButton(
+                    onPressed: () =>
+                        ref.read(notificationsProvider.notifier).load(),
+                    child: const Text('Tentar novamente'),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        data: (notifications) {
-          if (notifications.isEmpty) {
+            );
+          }
+          if (state.notifications.isEmpty) {
             return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -64,12 +68,11 @@ class NotificationsScreen extends ConsumerWidget {
             );
           }
           return RefreshIndicator(
-            onRefresh: () =>
-                ref.read(notificationsProvider.notifier).load(),
+            onRefresh: () => ref.read(notificationsProvider.notifier).load(),
             child: ListView.builder(
-              itemCount: notifications.length,
+              itemCount: state.notifications.length,
               itemBuilder: (context, index) {
-                final n = notifications[index];
+                final n = state.notifications[index];
                 return _NotificationTile(
                   notification: n,
                   timeAgo: _timeAgo(n.createdAt),

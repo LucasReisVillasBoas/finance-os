@@ -61,9 +61,9 @@ class RecurrenceModel {
       'amount': amount,
       if (description != null) 'description': description,
       'frequency': frequency,
-      'start_date': startDate.toIso8601String(),
-      if (endDate != null) 'end_date': endDate!.toIso8601String(),
-      'next_due_date': nextDueDate.toIso8601String(),
+      'start_date': startDate.toUtc().toIso8601String(),
+      if (endDate != null) 'end_date': endDate!.toUtc().toIso8601String(),
+      'next_due_date': nextDueDate.toUtc().toIso8601String(),
       'auto_launch': autoLaunch,
       'is_active': isActive,
     };

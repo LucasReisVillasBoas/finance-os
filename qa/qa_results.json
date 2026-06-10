@@ -1,0 +1,299 @@
+{
+  "timestamp": "2026-04-04T22:17:37.606Z",
+  "total": 58,
+  "passed": 58,
+  "failed": 0,
+  "pct": 100,
+  "results": [
+    {
+      "name": "1.1 API Health check",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "1.2 Register new user",
+      "ok": true,
+      "details": "user already exists (OK)"
+    },
+    {
+      "name": "1.3 Login",
+      "ok": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjc4ZDhhNmUtMzNmZi00ZWQzLTlhMTctY2QyODllMzgzZDYwIiwiZW1haWwiOiJxYUBmaW5hbmNlb3MuY29tIiwicGxhbiI6ImZyZWUiLCJzdWIiOiI2NzhkOGE2ZS0zM2ZmLTRlZDMtOWExNy1jZDI4OWUzODNkNjAiLCJleHAiOjE3NzUzNDE5MTUsImlhdCI6MTc3NTM0MTAxNX0.r1LrCkznFZs5D_znZCgEN21gLh0vJm9ClFAvAWsMWiQ",
+      "details": "token=eyJhbGciOiJIUzI1NiIs..."
+    },
+    {
+      "name": "1.4 Login with bad password returns 4xx",
+      "ok": true,
+      "details": "status=401"
+    },
+    {
+      "name": "1.5 Refresh token",
+      "ok": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjc4ZDhhNmUtMzNmZi00ZWQzLTlhMTctY2QyODllMzgzZDYwIiwiZW1haWwiOiJxYUBmaW5hbmNlb3MuY29tIiwicGxhbiI6ImZyZWUiLCJzdWIiOiI2NzhkOGE2ZS0zM2ZmLTRlZDMtOWExNy1jZDI4OWUzODNkNjAiLCJleHAiOjE3NzUzNDE5MTUsImlhdCI6MTc3NTM0MTAxNX0.r1LrCkznFZs5D_znZCgEN21gLh0vJm9ClFAvAWsMWiQ",
+      "details": "status=200"
+    },
+    {
+      "name": "1.6 Protected endpoint rejects unauthenticated",
+      "ok": true,
+      "details": "status=401"
+    },
+    {
+      "name": "1.7 Forgot password endpoint",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "2.1 List accounts",
+      "ok": true,
+      "details": "count=1"
+    },
+    {
+      "name": "2.2 Create account",
+      "ok": "8fcf58d2-23de-48c5-b9a1-c191db018044",
+      "details": "id=8fcf58d2-23de-48c5-b9a1-c191db018044"
+    },
+    {
+      "name": "2.3 Get account by ID",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "2.4 Update account",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "2.5 Accounts summary",
+      "ok": true,
+      "details": "balance=8500"
+    },
+    {
+      "name": "3.1 List categories",
+      "ok": true,
+      "details": "count=15"
+    },
+    {
+      "name": "3.2 Create category",
+      "ok": "a453e9c0-5f2c-4640-8778-48ca2b192ca3",
+      "details": "id=a453e9c0-5f2c-4640-8778-48ca2b192ca3"
+    },
+    {
+      "name": "3.3 Update category",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "4.1 Create transaction",
+      "ok": "300ff1d3-ee8e-4268-babe-95269f21a692",
+      "details": "id=300ff1d3-ee8e-4268-babe-95269f21a692"
+    },
+    {
+      "name": "4.2 List transactions",
+      "ok": true,
+      "details": "count=2"
+    },
+    {
+      "name": "4.3 Get transaction by ID",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "4.4 Update transaction",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "4.5 Transactions summary",
+      "ok": true,
+      "details": "expense=150"
+    },
+    {
+      "name": "4.6 Create income transaction",
+      "ok": "cbf2b7e1-8621-47bb-b8fc-a0bac0233f05",
+      "details": "status=201"
+    },
+    {
+      "name": "5.1 Dashboard overview",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "5.2 Dashboard cashflow",
+      "ok": true,
+      "details": "months=12"
+    },
+    {
+      "name": "6.1 Create budget",
+      "ok": "bcd4a5d9-a9f3-4c59-b037-a7f19bd8401f",
+      "details": "id=bcd4a5d9-a9f3-4c59-b037-a7f19bd8401f"
+    },
+    {
+      "name": "6.2 List budgets",
+      "ok": true,
+      "details": "count=1"
+    },
+    {
+      "name": "6.3 Budget progress",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "6.4 Update budget",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "7.1 Create goal",
+      "ok": "e182093f-a555-4268-89ac-b7aa8b332d9c",
+      "details": "id=e182093f-a555-4268-89ac-b7aa8b332d9c"
+    },
+    {
+      "name": "7.2 List goals",
+      "ok": true,
+      "details": "count=1"
+    },
+    {
+      "name": "7.3 Contribute to goal",
+      "ok": true,
+      "details": "status=201"
+    },
+    {
+      "name": "7.4 Goals projections",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "7.5 Update goal",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "8.1 List portfolios",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "8.2 Create portfolio",
+      "ok": "6e5ea30c-cba9-4714-b914-148d0736a242",
+      "details": "id=6e5ea30c-cba9-4714-b914-148d0736a242"
+    },
+    {
+      "name": "8.3 Update portfolio",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "8.4 List custom assets",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "8.5 Search assets",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "9.1 List notifications",
+      "ok": true,
+      "details": "count=0"
+    },
+    {
+      "name": "9.2 Mark all notifications as read",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "10.1 Create recurrence",
+      "ok": "165e4c5f-980b-485b-91ff-6be7cad130a9",
+      "details": "id=165e4c5f-980b-485b-91ff-6be7cad130a9"
+    },
+    {
+      "name": "10.2 List recurrences",
+      "ok": true,
+      "details": "count=2"
+    },
+    {
+      "name": "10.3 Update recurrence",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "11.1 Get family (or 404)",
+      "ok": true,
+      "details": "status=404"
+    },
+    {
+      "name": "12.1 AI chat endpoint responds",
+      "ok": true,
+      "details": "status=500"
+    },
+    {
+      "name": "12.2 AI spending forecast requires pro plan",
+      "ok": true,
+      "details": "status=402 (expected 402)"
+    },
+    {
+      "name": "13.1 Homepage loads and redirects",
+      "ok": true,
+      "details": "url=http://localhost:3000/#/onboarding"
+    },
+    {
+      "name": "13.2 Login page renders",
+      "ok": true,
+      "details": "url=http://localhost:3000/#/login, text=FinanceOS\nBem-vindo de volta\nEsqueceu a senha?\nEntrar\nNão tem conta?\nCriar conta"
+    },
+    {
+      "name": "13.3 Register page renders",
+      "ok": true,
+      "details": "url=http://localhost:3000/#/register"
+    },
+    {
+      "name": "13.4 Onboarding page renders",
+      "ok": true,
+      "details": "url=http://localhost:3000/#/onboarding"
+    },
+    {
+      "name": "13.5 Flutter web app loaded properly",
+      "ok": true,
+      "details": "{\"hasFlutter\":true,\"glassPanes\":1,\"hasSemanticsHost\":true}"
+    },
+    {
+      "name": "13.6 No critical JS errors on login page",
+      "ok": true,
+      "details": "errors=0: "
+    },
+    {
+      "name": "13.7 Protected route handles unauthenticated state",
+      "ok": true,
+      "details": "url=http://localhost:3000/#/login"
+    },
+    {
+      "name": "14.1 Delete transaction",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "14.2 Delete budget",
+      "ok": true,
+      "details": "status=204"
+    },
+    {
+      "name": "14.3 Delete goal",
+      "ok": true,
+      "details": "status=204"
+    },
+    {
+      "name": "14.4 Delete portfolio",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "14.5 Delete category",
+      "ok": true,
+      "details": "status=200"
+    },
+    {
+      "name": "14.6 Delete account",
+      "ok": true,
+      "details": "status=200"
+    }
+  ]
+}

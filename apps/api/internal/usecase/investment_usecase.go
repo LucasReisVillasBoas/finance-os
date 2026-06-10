@@ -2,13 +2,17 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/financeos/api/internal/domain/entity"
 	domainrepo "github.com/financeos/api/internal/domain/repository"
+	"github.com/financeos/api/pkg/brapi"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 )
 
 // Sentinel errors for investments
@@ -35,9 +39,11 @@ type UpdatePortfolioRequest struct {
 }
 
 type CreateHoldingRequest struct {
-	AssetID *uuid.UUID `json:"asset_id"`
-	Name    string     `json:"name" binding:"required"`
-	Type    string     `json:"type" binding:"required"`
+	AssetID  *uuid.UUID `json:"asset_id"`
+	Name     string     `json:"name" binding:"required"`
+	Type     string     `json:"type" binding:"required"`
+	Ticker   string     `json:"ticker"`
+	Exchange string     `json:"exchange"`
 }
 
 type UpdateHoldingRequest struct {
@@ -75,6 +81,16 @@ type UpdateCustomAssetRequest struct {
 	Description   *string    `json:"description"`
 }
 
+// ---- BrapiSearcher interface (allows mocking in tests) ----
+
+// BrapiSearcher is the interface for fetching asset data from BRAPI.
+type BrapiSearcher interface {
+	Search(ctx context.Context, query string) ([]brapi.AssetResult, error)
+	FetchPrice(ctx context.Context, ticker string) (float64, error)
+	FetchAvailableTickers(ctx context.Context) ([]string, error)
+	SearchByQuery(ctx context.Context, query string, allTickers []string) ([]brapi.AssetResult, error)
+}
+
 // ---- Interfaces ----
 
 type InvestmentUseCase interface {
@@ -108,11 +124,13 @@ type InvestmentUseCase interface {
 // ---- Implementation ----
 
 type investmentUseCase struct {
-	portfolioRepo    domainrepo.PortfolioRepository
-	holdingRepo      domainrepo.HoldingRepository
-	investTxRepo     domainrepo.InvestmentTransactionRepository
-	assetRepo        domainrepo.AssetRepository
-	customAssetRepo  domainrepo.CustomAssetRepository
+	portfolioRepo   domainrepo.PortfolioRepository
+	holdingRepo     domainrepo.HoldingRepository
+	investTxRepo    domainrepo.InvestmentTransactionRepository
+	assetRepo       domainrepo.AssetRepository
+	customAssetRepo domainrepo.CustomAssetRepository
+	brapiSvc        BrapiSearcher
+	cache           *redis.Client
 }
 
 // NewInvestmentUseCase creates a new InvestmentUseCase implementation.
@@ -122,6 +140,8 @@ func NewInvestmentUseCase(
 	itr domainrepo.InvestmentTransactionRepository,
 	ar domainrepo.AssetRepository,
 	car domainrepo.CustomAssetRepository,
+	brapiSvc BrapiSearcher,
+	cache *redis.Client,
 ) InvestmentUseCase {
 	return &investmentUseCase{
 		portfolioRepo:   pr,
@@ -129,6 +149,8 @@ func NewInvestmentUseCase(
 		investTxRepo:    itr,
 		assetRepo:       ar,
 		customAssetRepo: car,
+		brapiSvc:        brapiSvc,
+		cache:           cache,
 	}
 }
 
@@ -202,10 +224,47 @@ func (uc *investmentUseCase) DeletePortfolio(ctx context.Context, id, userID uui
 
 func (uc *investmentUseCase) CreateHolding(ctx context.Context, portfolioID uuid.UUID, req CreateHoldingRequest) (*entity.Holding, error) {
 	now := time.Now()
+	assetID := req.AssetID
+
+	// If ticker and exchange provided but no assetID, upsert asset in the DB
+	if req.Ticker != "" && req.Exchange != "" && assetID == nil {
+		existing, findErr := uc.assetRepo.FindByTicker(ctx, req.Ticker, req.Exchange)
+		if findErr != nil {
+			// Non-fatal — proceed without linking asset
+			existing = nil
+		}
+		if existing != nil {
+			assetID = &existing.ID
+		} else if uc.brapiSvc != nil {
+			// Try to fetch from BRAPI and persist
+			results, brapiErr := uc.brapiSvc.Search(ctx, req.Ticker)
+			if brapiErr == nil && len(results) > 0 {
+				r := results[0]
+				ticker := r.Ticker
+				exchange := r.Exchange
+				price := r.CurrentPrice
+				newAsset := &entity.Asset{
+					ID:           uuid.New(),
+					Ticker:       &ticker,
+					Name:         r.Name,
+					Type:         r.Type,
+					Exchange:     &exchange,
+					Currency:     r.Currency,
+					CurrentPrice: &price,
+					CreatedAt:    now,
+					UpdatedAt:    now,
+				}
+				if createErr := uc.assetRepo.Create(ctx, newAsset); createErr == nil {
+					assetID = &newAsset.ID
+				}
+			}
+		}
+	}
+
 	h := &entity.Holding{
 		ID:          uuid.New(),
 		PortfolioID: portfolioID,
-		AssetID:     req.AssetID,
+		AssetID:     assetID,
 		Name:        req.Name,
 		Type:        req.Type,
 		CreatedAt:   now,
@@ -323,14 +382,122 @@ func (uc *investmentUseCase) DeleteInvestmentTransaction(ctx context.Context, id
 // ---- Assets ----
 
 func (uc *investmentUseCase) SearchAssets(ctx context.Context, query string) ([]*entity.Asset, error) {
-	assets, err := uc.assetRepo.Search(ctx, query)
+	// 1. Try database first (assets already used by this user)
+	dbAssets, err := uc.assetRepo.Search(ctx, query)
 	if err != nil {
-		return nil, fmt.Errorf("investmentUseCase.SearchAssets: %w", err)
+		return nil, fmt.Errorf("investmentUseCase.SearchAssets db: %w", err)
 	}
-	if assets == nil {
-		assets = []*entity.Asset{}
+	if dbAssets == nil {
+		dbAssets = []*entity.Asset{}
 	}
-	return assets, nil
+	if len(dbAssets) >= 5 {
+		return dbAssets, nil
+	}
+
+	if uc.brapiSvc == nil || uc.cache == nil {
+		return dbAssets, nil
+	}
+
+	// 2. Load full B3 ticker list from Redis (cached 24h)
+	const tickersCacheKey = "brapi:tickers:all"
+	var allTickers []string
+
+	if raw, cErr := uc.cache.Get(ctx, tickersCacheKey).Bytes(); cErr == nil {
+		_ = json.Unmarshal(raw, &allTickers)
+	}
+
+	if len(allTickers) == 0 {
+		tickers, fetchErr := uc.brapiSvc.FetchAvailableTickers(ctx)
+		if fetchErr != nil {
+			// BRAPI unavailable — fallback to DB results
+			return dbAssets, nil
+		}
+		allTickers = tickers
+		if data, mErr := json.Marshal(tickers); mErr == nil {
+			_ = uc.cache.Set(ctx, tickersCacheKey, data, 24*time.Hour).Err()
+		}
+	}
+
+	// 3. Check per-query cache (1h TTL)
+	cacheKey := "asset_search:" + strings.ToLower(query)
+	var brapiAssets []*entity.Asset
+
+	if raw, cErr := uc.cache.Get(ctx, cacheKey).Bytes(); cErr == nil {
+		_ = json.Unmarshal(raw, &brapiAssets)
+	}
+
+	// 4. Cache miss — filter locally + batch-fetch prices from BRAPI
+	if len(brapiAssets) == 0 {
+		brapiResults, brapiErr := uc.brapiSvc.SearchByQuery(ctx, query, allTickers)
+		if brapiErr != nil {
+			// BRAPI unavailable — fallback to DB results
+			return dbAssets, nil
+		}
+
+		now := time.Now()
+		brapiAssets = make([]*entity.Asset, 0, len(brapiResults))
+		for _, r := range brapiResults {
+			ticker := r.Ticker
+			exchange := r.Exchange
+			price := r.CurrentPrice
+			brapiAssets = append(brapiAssets, &entity.Asset{
+				ID:           uuid.New(),
+				Ticker:       &ticker,
+				Name:         r.Name,
+				Type:         r.Type,
+				Exchange:     &exchange,
+				Currency:     r.Currency,
+				CurrentPrice: &price,
+				CreatedAt:    now,
+				UpdatedAt:    now,
+			})
+		}
+
+		if len(brapiAssets) > 0 {
+			if data, mErr := json.Marshal(brapiAssets); mErr == nil {
+				_ = uc.cache.Set(ctx, cacheKey, data, time.Hour).Err()
+			}
+		}
+	}
+
+	// 5. Merge DB + BRAPI, dedup by ticker|exchange, limit to 20
+	seen := make(map[string]struct{})
+	merged := make([]*entity.Asset, 0, len(dbAssets)+len(brapiAssets))
+
+	for _, a := range dbAssets {
+		key := ""
+		if a.Ticker != nil {
+			key = *a.Ticker
+		}
+		key += "|"
+		if a.Exchange != nil {
+			key += *a.Exchange
+		}
+		if _, exists := seen[key]; !exists {
+			seen[key] = struct{}{}
+			merged = append(merged, a)
+		}
+	}
+
+	for _, a := range brapiAssets {
+		key := ""
+		if a.Ticker != nil {
+			key = *a.Ticker
+		}
+		key += "|"
+		if a.Exchange != nil {
+			key += *a.Exchange
+		}
+		if _, exists := seen[key]; !exists {
+			seen[key] = struct{}{}
+			merged = append(merged, a)
+		}
+	}
+
+	if len(merged) > 20 {
+		merged = merged[:20]
+	}
+	return merged, nil
 }
 
 // ---- Custom Assets ----

@@ -130,7 +130,7 @@ class _RecurrenceCard extends StatelessWidget {
     final isIncome = recurrence.type == 'income';
     final amountColor = isIncome ? Colors.green : Colors.red;
     final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final dateFormatter = DateFormat('dd/MM/yyyy');
+    final dateFormatter = DateFormat('dd/MM/yyyy', 'pt_BR');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
