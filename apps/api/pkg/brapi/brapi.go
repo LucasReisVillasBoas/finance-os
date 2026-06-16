@@ -33,22 +33,39 @@ type brapiQuoteResponse struct {
 	Error string `json:"error"`
 }
 
+// brapiBaseURL is the base URL for the BRAPI API.
+const brapiBaseURL = "https://brapi.dev/api"
+
 // BrapiService calls the BRAPI API for asset data.
 type BrapiService struct {
 	httpClient *http.Client
+	token      string
 }
 
 // NewBrapiService creates a BrapiService with a 10-second timeout.
-func NewBrapiService() *BrapiService {
+// token is the (optional) BRAPI API token. brapi.dev requires a free token
+// for quote endpoints; when empty the service still works in best-effort mode
+// (the /available endpoint is public), but prices may be unavailable.
+func NewBrapiService(token string) *BrapiService {
 	return &BrapiService{
 		httpClient: &http.Client{Timeout: 10 * time.Second},
+		token:      token,
 	}
+}
+
+// quoteURL builds a /quote/:ticker URL, appending the API token when configured.
+func (s *BrapiService) quoteURL(ticker string) string {
+	url := fmt.Sprintf("%s/quote/%s?fundamental=false", brapiBaseURL, ticker)
+	if s.token != "" {
+		url += "&token=" + s.token
+	}
+	return url
 }
 
 // Search fetches asset information for the given ticker/query from BRAPI.
 // Returns nil, nil when BRAPI reports an error (e.g. ticker not found).
 func (s *BrapiService) Search(ctx context.Context, query string) ([]AssetResult, error) {
-	url := fmt.Sprintf("https://brapi.dev/api/quote/%s?fundamental=false", query)
+	url := s.quoteURL(query)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("brapi.Search: new request: %w", err)
@@ -113,7 +130,11 @@ type brapiAvailableResponse struct {
 
 // FetchAvailableTickers returns all tickers available on B3 via GET /available.
 func (s *BrapiService) FetchAvailableTickers(ctx context.Context) ([]string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://brapi.dev/api/available", nil)
+	url := brapiBaseURL + "/available"
+	if s.token != "" {
+		url += "?token=" + s.token
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("brapi.FetchAvailableTickers: new request: %w", err)
 	}
@@ -165,7 +186,7 @@ func (s *BrapiService) SearchByQuery(ctx context.Context, query string, allTicke
 		wg.Add(1)
 		go func(t string) {
 			defer wg.Done()
-			url := fmt.Sprintf("https://brapi.dev/api/quote/%s?fundamental=false", t)
+			url := s.quoteURL(t)
 			req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 			if err != nil {
 				ch <- result{asset: AssetResult{Ticker: t, Name: t, Type: "stock", Exchange: "B3", Currency: "BRL"}}

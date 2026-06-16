@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../providers/investments_provider.dart';
 import '../models/holding_model.dart';
+import '../models/currency_quote_model.dart';
 
 class PortfolioScreen extends ConsumerStatefulWidget {
   const PortfolioScreen({super.key});
@@ -17,8 +18,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-        () => ref.read(investmentsProvider.notifier).loadPortfolios());
+    Future.microtask(() {
+      final notifier = ref.read(investmentsProvider.notifier);
+      notifier.loadPortfolios();
+      notifier.loadCurrencyQuotes();
+    });
   }
 
   Future<void> _showCreatePortfolioDialog(BuildContext context) async {
@@ -113,8 +117,14 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: () =>
-                      ref.read(investmentsProvider.notifier).loadPortfolios(),
+                  onRefresh: () async {
+                    final notifier =
+                        ref.read(investmentsProvider.notifier);
+                    await Future.wait([
+                      notifier.loadPortfolios(),
+                      notifier.loadCurrencyQuotes(),
+                    ]);
+                  },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
@@ -129,6 +139,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                           currency: currency,
                         ),
                         const SizedBox(height: 16),
+                        // Currency quotes (USD, EUR)
+                        if (state.currencyQuotes.isNotEmpty) ...[
+                          _CurrencyQuotesCard(quotes: state.currencyQuotes),
+                          const SizedBox(height: 16),
+                        ],
                         // Allocation pie chart
                         if (state.holdings.isNotEmpty) ...[
                           _AllocationChart(holdings: state.holdings),
@@ -272,6 +287,95 @@ class _MetricItem extends StatelessWidget {
           Text(subtitle!,
               style: TextStyle(fontSize: 12, color: color ?? Colors.grey)),
       ],
+    );
+  }
+}
+
+class _CurrencyQuotesCard extends StatelessWidget {
+  final List<CurrencyQuoteModel> quotes;
+
+  const _CurrencyQuotesCard({required this.quotes});
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.currency_exchange, size: 18),
+                const SizedBox(width: 6),
+                const Text('Cotações de Moedas',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: quotes
+                  .map((q) => Expanded(
+                        child: _CurrencyTile(quote: q, currency: fmt),
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CurrencyTile extends StatelessWidget {
+  final CurrencyQuoteModel quote;
+  final NumberFormat currency;
+
+  const _CurrencyTile({required this.quote, required this.currency});
+
+  @override
+  Widget build(BuildContext context) {
+    final up = quote.pctChange >= 0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${quote.shortLabel} (${quote.pair})',
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            currency.format(quote.bid),
+            style:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              Icon(
+                up ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                color: quote.changeColor,
+                size: 18,
+              ),
+              Text(
+                '${up ? '+' : ''}${quote.pctChange.toStringAsFixed(2)}%',
+                style: TextStyle(
+                  color: quote.changeColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

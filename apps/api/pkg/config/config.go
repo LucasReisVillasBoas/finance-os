@@ -16,6 +16,7 @@ type Config struct {
 	JWT       JWTConfig
 	Claude    ClaudeConfig
 	Evolution EvolutionConfig
+	Brapi     BrapiConfig
 	CORS      CORSConfig
 }
 
@@ -58,6 +59,13 @@ type ClaudeConfig struct {
 type EvolutionConfig struct {
 	APIURL string
 	APIKey string
+}
+
+// BrapiConfig holds BRAPI (Brazilian stock quotes) settings.
+// Token is optional: brapi.dev grants a free token that unlocks quote
+// endpoints. Without it the project still runs in best-effort mode.
+type BrapiConfig struct {
+	Token string
 }
 
 // CORSConfig holds CORS settings.
@@ -113,6 +121,8 @@ func Load() (*Config, error) {
 
 		"evolution.api_url": "EVOLUTION_API_URL",
 		"evolution.api_key": "EVOLUTION_API_KEY",
+
+		"brapi.token": "BRAPI_TOKEN",
 
 		"cors.origins": "CORS_ORIGINS",
 	}
@@ -180,6 +190,9 @@ func Load() (*Config, error) {
 		Evolution: EvolutionConfig{
 			APIURL: v.GetString("evolution.api_url"),
 			APIKey: v.GetString("evolution.api_key"),
+		},
+		Brapi: BrapiConfig{
+			Token: v.GetString("brapi.token"),
 		},
 		CORS: CORSConfig{
 			Origins: origins,

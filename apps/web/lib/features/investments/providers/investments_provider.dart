@@ -4,6 +4,7 @@ import '../models/holding_model.dart';
 import '../models/investment_transaction_model.dart';
 import '../models/custom_asset_model.dart';
 import '../models/asset_model.dart';
+import '../models/currency_quote_model.dart';
 import '../repositories/investment_repository.dart';
 
 class InvestmentsState {
@@ -12,6 +13,7 @@ class InvestmentsState {
   final List<InvestmentTransactionModel> transactions;
   final List<CustomAssetModel> customAssets;
   final List<AssetModel> searchResults;
+  final List<CurrencyQuoteModel> currencyQuotes;
   final bool isLoading;
   final String? error;
   final String? selectedPortfolioId;
@@ -22,6 +24,7 @@ class InvestmentsState {
     this.transactions = const [],
     this.customAssets = const [],
     this.searchResults = const [],
+    this.currencyQuotes = const [],
     this.isLoading = false,
     this.error,
     this.selectedPortfolioId,
@@ -33,6 +36,7 @@ class InvestmentsState {
     List<InvestmentTransactionModel>? transactions,
     List<CustomAssetModel>? customAssets,
     List<AssetModel>? searchResults,
+    List<CurrencyQuoteModel>? currencyQuotes,
     bool? isLoading,
     String? error,
     bool clearError = false,
@@ -44,6 +48,7 @@ class InvestmentsState {
         transactions: transactions ?? this.transactions,
         customAssets: customAssets ?? this.customAssets,
         searchResults: searchResults ?? this.searchResults,
+        currencyQuotes: currencyQuotes ?? this.currencyQuotes,
         isLoading: isLoading ?? this.isLoading,
         error: clearError ? null : (error ?? this.error),
         selectedPortfolioId: selectedPortfolioId ?? this.selectedPortfolioId,
@@ -213,6 +218,17 @@ class InvestmentsNotifier extends StateNotifier<InvestmentsState> {
       state = state.copyWith(searchResults: results);
     } catch (e) {
       state = state.copyWith(searchResults: []);
+    }
+  }
+
+  /// Loads USD/EUR currency quotes. Failures are silent so they never block
+  /// the rest of the portfolio screen.
+  Future<void> loadCurrencyQuotes() async {
+    try {
+      final quotes = await _repo.getCurrencyQuotes();
+      state = state.copyWith(currencyQuotes: quotes);
+    } catch (_) {
+      // Keep any previously loaded quotes; quotes are non-critical.
     }
   }
 
