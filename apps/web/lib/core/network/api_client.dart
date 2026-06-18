@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'base_url.dart';
 
-const String _baseUrl = String.fromEnvironment(
-  'API_BASE_URL',
-  defaultValue: 'http://localhost:8000',
-);
+const _envUrl = String.fromEnvironment('API_BASE_URL');
+
+// Resolves the API base URL at runtime:
+//   1. If API_BASE_URL was provided at build time (--dart-define), use it.
+//   2. Otherwise fall back to a platform-aware default so Android emulators
+//      reach the host machine via 10.0.2.2 instead of the loopback address.
+String get _baseUrl => _envUrl.isNotEmpty ? _envUrl : getDefaultBaseUrl();
 
 const _storage = FlutterSecureStorage();
 

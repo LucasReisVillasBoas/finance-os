@@ -26,6 +26,7 @@ import '../../features/investments/screens/holding_detail_screen.dart';
 import '../../features/investments/screens/investment_form_screen.dart';
 import '../../features/investments/screens/custom_asset_form_screen.dart';
 import '../../features/investments/screens/portfolio_analysis_screen.dart';
+import '../../features/investments/screens/tax_report_screen.dart';
 import '../../features/goals/screens/goals_screen.dart';
 import '../../features/goals/screens/goal_form_screen.dart';
 import '../../features/settings/screens/import_screen.dart';
@@ -268,6 +269,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/investments/analysis',
         builder: (context, state) => const PortfolioAnalysisScreen(),
+      ),
+      GoRoute(
+        path: '/investments/tax-report',
+        builder: (context, state) => const TaxReportScreen(),
       ),
       // Goals
       GoRoute(

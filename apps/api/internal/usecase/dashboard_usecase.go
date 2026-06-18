@@ -12,6 +12,7 @@ import (
 type DashboardUseCase interface {
 	GetOverview(ctx context.Context, userID uuid.UUID, month, year int) (*domainrepo.DashboardOverview, error)
 	GetCashflow(ctx context.Context, userID uuid.UUID) ([]domainrepo.MonthlyCashflow, error)
+	GetPatrimonyHistory(ctx context.Context, userID uuid.UUID) ([]domainrepo.PatrimonySnapshot, error)
 }
 
 type dashboardUseCase struct {
@@ -38,4 +39,13 @@ func (uc *dashboardUseCase) GetCashflow(ctx context.Context, userID uuid.UUID) (
 		return nil, fmt.Errorf("dashboardUseCase.GetCashflow: %w", err)
 	}
 	return cashflow, nil
+}
+
+// GetPatrimonyHistory returns 12 months of cumulative net worth snapshots.
+func (uc *dashboardUseCase) GetPatrimonyHistory(ctx context.Context, userID uuid.UUID) ([]domainrepo.PatrimonySnapshot, error) {
+	history, err := uc.repo.GetPatrimonyHistory(ctx, userID, 12)
+	if err != nil {
+		return nil, fmt.Errorf("dashboardUseCase.GetPatrimonyHistory: %w", err)
+	}
+	return history, nil
 }

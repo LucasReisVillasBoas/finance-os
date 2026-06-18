@@ -147,4 +147,17 @@ class InvestmentRepository {
   Future<void> deleteCustomAsset(String id) async {
     await _dio.delete('/custom-assets/$id');
   }
+
+  Future<Map<String, dynamic>> getTaxReport(int year) async {
+    final response = await _dio.get('/investments/tax-report',
+        queryParameters: {'year': year});
+    final body = response.data as Map<String, dynamic>;
+    return body['data'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getPortfolioPerformance() async {
+    final response = await _dio.get('/investments/performance');
+    final body = response.data as Map<String, dynamic>;
+    return body['data'] as Map<String, dynamic>;
+  }
 }

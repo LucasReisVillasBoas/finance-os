@@ -3,6 +3,8 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/financeos/api/internal/usecase"
 	"github.com/gin-gonic/gin"
@@ -334,6 +336,9 @@ func (h *InvestmentHandler) CreateInvestmentTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": gin.H{"code": "INVALID_INPUT", "message": err.Error()}})
 		return
 	}
+	if userID, err := uuid.Parse(c.GetString("user_id")); err == nil {
+		req.UserID = userID
+	}
 
 	tx, err := h.usecase.CreateInvestmentTransaction(c.Request.Context(), holdingID, req)
 	if err != nil {
@@ -535,4 +540,47 @@ func (h *InvestmentHandler) DeleteCustomAsset(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": gin.H{"message": "custom asset deleted successfully"}})
+}
+
+// GetPortfolioPerformance handles GET /api/v1/investments/performance
+func (h *InvestmentHandler) GetPortfolioPerformance(c *gin.Context) {
+	userID, err := uuid.Parse(c.GetString("user_id"))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": gin.H{"code": "UNAUTHORIZED", "message": "invalid user id"}})
+		return
+	}
+
+	perf, err := h.usecase.GetPortfolioPerformance(c.Request.Context(), userID)
+	if err != nil {
+		h.logger.Error("portfolio performance", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"code": "INTERNAL_ERROR", "message": "internal error"}})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": perf})
+}
+
+// GetTaxReport handles GET /api/v1/investments/tax-report?year=YYYY
+func (h *InvestmentHandler) GetTaxReport(c *gin.Context) {
+	userID, err := uuid.Parse(c.GetString("user_id"))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": gin.H{"code": "UNAUTHORIZED", "message": "invalid user id"}})
+		return
+	}
+
+	year := time.Now().Year()
+	if y := c.Query("year"); y != "" {
+		if parsed, err := strconv.Atoi(y); err == nil && parsed >= 2020 {
+			year = parsed
+		}
+	}
+
+	report, err := h.usecase.GetTaxReport(c.Request.Context(), userID, year)
+	if err != nil {
+		h.logger.Error("tax report", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"code": "INTERNAL_ERROR", "message": "internal error"}})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": report})
 }

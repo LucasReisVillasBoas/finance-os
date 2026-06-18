@@ -96,6 +96,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
             tooltip: 'Análise',
             onPressed: () => context.push('/investments/analysis'),
           ),
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'Relatório de IR',
+            onPressed: () => context.push('/investments/tax-report'),
+          ),
         ],
       ),
       body: state.isLoading
@@ -299,81 +304,29 @@ class _CurrencyQuotesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final theme = Theme.of(context);
 
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.currency_exchange, size: 18),
-                const SizedBox(width: 6),
-                const Text('Cotações de Moedas',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: quotes
-                  .map((q) => Expanded(
-                        child: _CurrencyTile(quote: q, currency: fmt),
-                      ))
-                  .toList(),
-            ),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(8),
       ),
-    );
-  }
-}
-
-class _CurrencyTile extends StatelessWidget {
-  final CurrencyQuoteModel quote;
-  final NumberFormat currency;
-
-  const _CurrencyTile({required this.quote, required this.currency});
-
-  @override
-  Widget build(BuildContext context) {
-    final up = quote.pctChange >= 0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
-          Text(
-            '${quote.shortLabel} (${quote.pair})',
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            currency.format(quote.bid),
-            style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Icon(
-                up ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: quote.changeColor,
-                size: 18,
-              ),
-              Text(
-                '${up ? '+' : ''}${quote.pctChange.toStringAsFixed(2)}%',
-                style: TextStyle(
-                  color: quote.changeColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+          const Icon(Icons.currency_exchange, size: 14, color: Colors.grey),
+          const SizedBox(width: 6),
+          ...quotes.map((q) => Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Text(
+                  '${q.code}: ${fmt.format(q.bid)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              )),
         ],
       ),
     );

@@ -52,6 +52,13 @@ func (r *fakeDashboardRepo) GetCashflow(ctx context.Context, userID uuid.UUID, m
 	return r.cashflow, nil
 }
 
+func (r *fakeDashboardRepo) GetPatrimonyHistory(ctx context.Context, userID uuid.UUID, months int) ([]domainrepo.PatrimonySnapshot, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+	return []domainrepo.PatrimonySnapshot{}, nil
+}
+
 // --- Tests ---
 
 func TestDashboardUseCase_GetOverview(t *testing.T) {
