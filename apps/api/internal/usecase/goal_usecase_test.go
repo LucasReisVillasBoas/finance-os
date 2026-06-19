@@ -249,3 +249,95 @@ func TestDeleteGoal_NotFound(t *testing.T) {
 	err := uc.Delete(context.Background(), uuid.New(), uuid.New())
 	assert.ErrorIs(t, err, usecase.ErrGoalNotFound)
 }
+
+// ------------------------------------------------------------------ D8 ----
+// Goals linked to portfolios: PortfolioID is persisted and updatable
+
+func TestCreateGoal_WithPortfolioID(t *testing.T) {
+	repo := newFakeGoalRepo()
+	uc := usecase.NewGoalUseCase(repo)
+
+	userID := uuid.New()
+	portfolioID := uuid.New()
+	monthly := 500.0
+
+	req := usecase.CreateGoalRequest{
+		Name:                "Aposentadoria",
+		TargetAmount:        200000.0,
+		MonthlyContribution: &monthly,
+		PortfolioID:         &portfolioID,
+	}
+
+	goal, err := uc.Create(context.Background(), userID, req)
+	require.NoError(t, err)
+	require.NotNil(t, goal)
+
+	assert.Equal(t, "Aposentadoria", goal.Name)
+	require.NotNil(t, goal.PortfolioID, "PortfolioID should be set")
+	assert.Equal(t, portfolioID, *goal.PortfolioID, "D8: portfolio linked to goal")
+
+	// Verify stored value
+	stored := repo.goals[goal.ID]
+	require.NotNil(t, stored.PortfolioID)
+	assert.Equal(t, portfolioID, *stored.PortfolioID)
+}
+
+func TestUpdateGoal_LinkPortfolio(t *testing.T) {
+	repo := newFakeGoalRepo()
+	uc := usecase.NewGoalUseCase(repo)
+
+	userID := uuid.New()
+
+	// Create goal without portfolio link
+	goal, err := uc.Create(context.Background(), userID, usecase.CreateGoalRequest{
+		Name:         "Comprar Apartamento",
+		TargetAmount: 150000.0,
+	})
+	require.NoError(t, err)
+	assert.Nil(t, goal.PortfolioID, "starts without portfolio link")
+
+	// Link to a portfolio via Update (D8)
+	portfolioID := uuid.New()
+	updated, err := uc.Update(context.Background(), goal.ID, userID, usecase.UpdateGoalRequest{
+		PortfolioID: &portfolioID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, updated.PortfolioID, "portfolio should be linked after update")
+	assert.Equal(t, portfolioID, *updated.PortfolioID)
+}
+
+func TestUpdateGoal_ChangePortfolio(t *testing.T) {
+	repo := newFakeGoalRepo()
+	uc := usecase.NewGoalUseCase(repo)
+
+	userID := uuid.New()
+	oldPortfolioID := uuid.New()
+
+	goal, err := uc.Create(context.Background(), userID, usecase.CreateGoalRequest{
+		Name:         "Reserva Estratégica",
+		TargetAmount: 50000.0,
+		PortfolioID:  &oldPortfolioID,
+	})
+	require.NoError(t, err)
+
+	newPortfolioID := uuid.New()
+	updated, err := uc.Update(context.Background(), goal.ID, userID, usecase.UpdateGoalRequest{
+		PortfolioID: &newPortfolioID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, updated.PortfolioID)
+	assert.Equal(t, newPortfolioID, *updated.PortfolioID, "portfolio should be updated to new one")
+}
+
+func TestCreateGoal_WithoutPortfolioID_NilPortfolio(t *testing.T) {
+	repo := newFakeGoalRepo()
+	uc := usecase.NewGoalUseCase(repo)
+
+	goal, err := uc.Create(context.Background(), uuid.New(), usecase.CreateGoalRequest{
+		Name:         "Fundo de Emergência",
+		TargetAmount: 30000.0,
+		// PortfolioID omitted
+	})
+	require.NoError(t, err)
+	assert.Nil(t, goal.PortfolioID, "goal without portfolio link should have nil PortfolioID")
+}
