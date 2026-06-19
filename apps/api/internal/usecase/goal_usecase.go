@@ -25,6 +25,7 @@ type CreateGoalRequest struct {
 	MonthlyContribution *float64   `json:"monthly_contribution"`
 	Icon                *string    `json:"icon"`
 	Color               *string    `json:"color"`
+	PortfolioID         *uuid.UUID `json:"portfolio_id"`
 }
 
 // UpdateGoalRequest holds fields that can be updated on a goal.
@@ -35,6 +36,7 @@ type UpdateGoalRequest struct {
 	MonthlyContribution *float64   `json:"monthly_contribution"`
 	Icon                *string    `json:"icon"`
 	Color               *string    `json:"color"`
+	PortfolioID         *uuid.UUID `json:"portfolio_id"`
 }
 
 // ContributeRequest holds data for a contribution to a goal.
@@ -76,6 +78,7 @@ func (uc *goalUseCase) Create(ctx context.Context, userID uuid.UUID, req CreateG
 		MonthlyContribution: req.MonthlyContribution,
 		Icon:                req.Icon,
 		Color:               req.Color,
+		PortfolioID:         req.PortfolioID,
 		IsAchieved:          false,
 		CreatedAt:           now,
 		UpdatedAt:           now,
@@ -134,6 +137,9 @@ func (uc *goalUseCase) Update(ctx context.Context, id, userID uuid.UUID, req Upd
 	}
 	if req.Color != nil {
 		g.Color = req.Color
+	}
+	if req.PortfolioID != nil {
+		g.PortfolioID = req.PortfolioID
 	}
 
 	if err := uc.repo.Update(ctx, g); err != nil {

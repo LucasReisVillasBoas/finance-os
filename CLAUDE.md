@@ -380,6 +380,16 @@ docker-compose up -d
   `POST /portfolios/:id/holdings`, depois usar o holding ID em
   `POST /holdings/:id/transactions`.
 
+### Cotações (APIs externas, gratuitas)
+- **Busca de ações (B3)**: usa a [BRAPI](https://brapi.dev) (`pkg/brapi`).
+  Hoje o brapi.dev exige um token gratuito para os endpoints de cotação —
+  configure `BRAPI_TOKEN` no `.env`. Sem token a busca ainda funciona, mas
+  os preços podem vir zerados. O token é anexado como `&token=` nas chamadas.
+- **Cotações de moedas (USD/EUR)**: usa a
+  [AwesomeAPI](https://docs.awesomeapi.com.br) (`pkg/currency`), gratuita e
+  sem chave. Endpoint: `GET /api/v1/quotes/currencies` (cache Redis de 10min,
+  chave `quotes:currencies`). Pares padrão: `USD-BRL`, `EUR-BRL`.
+
 ---
 
 ## Ordem de Execução das Fases

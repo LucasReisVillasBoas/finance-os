@@ -18,6 +18,8 @@ type Goal struct {
 	Icon                *string    `json:"icon,omitempty" db:"icon"`
 	Color               *string    `json:"color,omitempty" db:"color"`
 	IsAchieved          bool       `json:"is_achieved" db:"is_achieved"`
+	PortfolioID         *uuid.UUID `json:"portfolio_id,omitempty" db:"portfolio_id"`
+	PortfolioValue      float64    `json:"portfolio_value,omitempty" db:"-"` // computed at read time
 	CreatedAt           time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt           time.Time  `json:"updated_at" db:"updated_at"`
 }

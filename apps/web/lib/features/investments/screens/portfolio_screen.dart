@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../providers/investments_provider.dart';
 import '../models/holding_model.dart';
+import '../models/currency_quote_model.dart';
 
 class PortfolioScreen extends ConsumerStatefulWidget {
   const PortfolioScreen({super.key});
@@ -17,8 +18,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-        () => ref.read(investmentsProvider.notifier).loadPortfolios());
+    Future.microtask(() {
+      final notifier = ref.read(investmentsProvider.notifier);
+      notifier.loadPortfolios();
+      notifier.loadCurrencyQuotes();
+    });
   }
 
   Future<void> _showCreatePortfolioDialog(BuildContext context) async {
@@ -92,6 +96,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
             tooltip: 'Análise',
             onPressed: () => context.push('/investments/analysis'),
           ),
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'Relatório de IR',
+            onPressed: () => context.push('/investments/tax-report'),
+          ),
         ],
       ),
       body: state.isLoading
@@ -113,8 +122,14 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: () =>
-                      ref.read(investmentsProvider.notifier).loadPortfolios(),
+                  onRefresh: () async {
+                    final notifier =
+                        ref.read(investmentsProvider.notifier);
+                    await Future.wait([
+                      notifier.loadPortfolios(),
+                      notifier.loadCurrencyQuotes(),
+                    ]);
+                  },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16),
@@ -129,6 +144,11 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                           currency: currency,
                         ),
                         const SizedBox(height: 16),
+                        // Currency quotes (USD, EUR)
+                        if (state.currencyQuotes.isNotEmpty) ...[
+                          _CurrencyQuotesCard(quotes: state.currencyQuotes),
+                          const SizedBox(height: 16),
+                        ],
                         // Allocation pie chart
                         if (state.holdings.isNotEmpty) ...[
                           _AllocationChart(holdings: state.holdings),
@@ -272,6 +292,43 @@ class _MetricItem extends StatelessWidget {
           Text(subtitle!,
               style: TextStyle(fontSize: 12, color: color ?? Colors.grey)),
       ],
+    );
+  }
+}
+
+class _CurrencyQuotesCard extends StatelessWidget {
+  final List<CurrencyQuoteModel> quotes;
+
+  const _CurrencyQuotesCard({required this.quotes});
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          const Icon(Icons.currency_exchange, size: 14, color: Colors.grey),
+          const SizedBox(width: 6),
+          ...quotes.map((q) => Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Text(
+                  '${q.code}: ${fmt.format(q.bid)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

@@ -3,6 +3,11 @@ class DashboardOverview {
   final double totalIncome;
   final double totalExpense;
   final double totalPatrimony;
+  final double investmentValue;
+  final double customAssetValue;
+  final double totalNetWorth;
+  final double investmentCapacity;
+  final double investmentCapacityPct;
   final List<CategorySummaryModel> topCategories;
   final List<BudgetAlertModel> alertBudgets;
   final List<RecentTransactionModel> recentTransactions;
@@ -12,6 +17,11 @@ class DashboardOverview {
     required this.totalIncome,
     required this.totalExpense,
     required this.totalPatrimony,
+    required this.investmentValue,
+    required this.customAssetValue,
+    required this.totalNetWorth,
+    required this.investmentCapacity,
+    required this.investmentCapacityPct,
     required this.topCategories,
     required this.alertBudgets,
     required this.recentTransactions,
@@ -23,6 +33,11 @@ class DashboardOverview {
       totalIncome: (json['total_income'] as num?)?.toDouble() ?? 0.0,
       totalExpense: (json['total_expense'] as num?)?.toDouble() ?? 0.0,
       totalPatrimony: (json['total_patrimony'] as num?)?.toDouble() ?? 0.0,
+      investmentValue: (json['investment_value'] as num?)?.toDouble() ?? 0.0,
+      customAssetValue: (json['custom_asset_value'] as num?)?.toDouble() ?? 0.0,
+      totalNetWorth: (json['total_net_worth'] as num?)?.toDouble() ?? 0.0,
+      investmentCapacity: (json['investment_capacity'] as num?)?.toDouble() ?? 0.0,
+      investmentCapacityPct: (json['investment_capacity_pct'] as num?)?.toDouble() ?? 0.0,
       topCategories: (json['top_categories'] as List<dynamic>? ?? [])
           .map((e) => CategorySummaryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -32,6 +47,35 @@ class DashboardOverview {
       recentTransactions: (json['recent_transactions'] as List<dynamic>? ?? [])
           .map((e) => RecentTransactionModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+  }
+}
+
+class PatrimonySnapshotModel {
+  final int month;
+  final int year;
+  final String label;
+  final double bankSavings;
+  final double investedTotal;
+  final double totalNetWorth;
+
+  const PatrimonySnapshotModel({
+    required this.month,
+    required this.year,
+    required this.label,
+    required this.bankSavings,
+    required this.investedTotal,
+    required this.totalNetWorth,
+  });
+
+  factory PatrimonySnapshotModel.fromJson(Map<String, dynamic> json) {
+    return PatrimonySnapshotModel(
+      month: json['month'] as int,
+      year: json['year'] as int,
+      label: json['label'] as String? ?? '',
+      bankSavings: (json['bank_savings'] as num?)?.toDouble() ?? 0.0,
+      investedTotal: (json['invested_total'] as num?)?.toDouble() ?? 0.0,
+      totalNetWorth: (json['total_net_worth'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

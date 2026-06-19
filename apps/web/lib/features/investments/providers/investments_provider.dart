@@ -4,6 +4,7 @@ import '../models/holding_model.dart';
 import '../models/investment_transaction_model.dart';
 import '../models/custom_asset_model.dart';
 import '../models/asset_model.dart';
+import '../models/currency_quote_model.dart';
 import '../repositories/investment_repository.dart';
 
 class InvestmentsState {
@@ -12,6 +13,9 @@ class InvestmentsState {
   final List<InvestmentTransactionModel> transactions;
   final List<CustomAssetModel> customAssets;
   final List<AssetModel> searchResults;
+  final List<CurrencyQuoteModel> currencyQuotes;
+  final Map<String, dynamic>? taxReport;
+  final Map<String, dynamic>? portfolioPerformance;
   final bool isLoading;
   final String? error;
   final String? selectedPortfolioId;
@@ -22,6 +26,9 @@ class InvestmentsState {
     this.transactions = const [],
     this.customAssets = const [],
     this.searchResults = const [],
+    this.currencyQuotes = const [],
+    this.taxReport,
+    this.portfolioPerformance,
     this.isLoading = false,
     this.error,
     this.selectedPortfolioId,
@@ -33,6 +40,9 @@ class InvestmentsState {
     List<InvestmentTransactionModel>? transactions,
     List<CustomAssetModel>? customAssets,
     List<AssetModel>? searchResults,
+    List<CurrencyQuoteModel>? currencyQuotes,
+    Map<String, dynamic>? taxReport,
+    Map<String, dynamic>? portfolioPerformance,
     bool? isLoading,
     String? error,
     bool clearError = false,
@@ -44,6 +54,9 @@ class InvestmentsState {
         transactions: transactions ?? this.transactions,
         customAssets: customAssets ?? this.customAssets,
         searchResults: searchResults ?? this.searchResults,
+        currencyQuotes: currencyQuotes ?? this.currencyQuotes,
+        taxReport: taxReport ?? this.taxReport,
+        portfolioPerformance: portfolioPerformance ?? this.portfolioPerformance,
         isLoading: isLoading ?? this.isLoading,
         error: clearError ? null : (error ?? this.error),
         selectedPortfolioId: selectedPortfolioId ?? this.selectedPortfolioId,
@@ -216,6 +229,17 @@ class InvestmentsNotifier extends StateNotifier<InvestmentsState> {
     }
   }
 
+  /// Loads USD/EUR currency quotes. Failures are silent so they never block
+  /// the rest of the portfolio screen.
+  Future<void> loadCurrencyQuotes() async {
+    try {
+      final quotes = await _repo.getCurrencyQuotes();
+      state = state.copyWith(currencyQuotes: quotes);
+    } catch (_) {
+      // Keep any previously loaded quotes; quotes are non-critical.
+    }
+  }
+
   Future<void> loadCustomAssets() async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
@@ -264,6 +288,25 @@ class InvestmentsNotifier extends StateNotifier<InvestmentsState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: _extractError(e));
       return false;
+    }
+  }
+
+  Future<void> loadTaxReport(int year) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final report = await _repo.getTaxReport(year);
+      state = state.copyWith(taxReport: report, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: _extractError(e));
+    }
+  }
+
+  Future<void> loadPortfolioPerformance() async {
+    try {
+      final perf = await _repo.getPortfolioPerformance();
+      state = state.copyWith(portfolioPerformance: perf);
+    } catch (_) {
+      // non-critical — portfolio screen still works without benchmark
     }
   }
 

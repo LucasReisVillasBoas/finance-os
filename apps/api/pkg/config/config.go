@@ -16,6 +16,7 @@ type Config struct {
 	JWT       JWTConfig
 	Claude    ClaudeConfig
 	Evolution EvolutionConfig
+	Brapi     BrapiConfig
 	CORS      CORSConfig
 }
 
@@ -58,6 +59,13 @@ type ClaudeConfig struct {
 type EvolutionConfig struct {
 	APIURL string
 	APIKey string
+}
+
+// BrapiConfig holds BRAPI (Brazilian stock quotes) settings.
+// Token is optional: brapi.dev grants a free token that unlocks quote
+// endpoints. Without it the project still runs in best-effort mode.
+type BrapiConfig struct {
+	Token string
 }
 
 // CORSConfig holds CORS settings.
@@ -113,6 +121,8 @@ func Load() (*Config, error) {
 
 		"evolution.api_url": "EVOLUTION_API_URL",
 		"evolution.api_key": "EVOLUTION_API_KEY",
+
+		"brapi.token": "BRAPI_TOKEN",
 
 		"cors.origins": "CORS_ORIGINS",
 	}
@@ -181,6 +191,9 @@ func Load() (*Config, error) {
 			APIURL: v.GetString("evolution.api_url"),
 			APIKey: v.GetString("evolution.api_key"),
 		},
+		Brapi: BrapiConfig{
+			Token: v.GetString("brapi.token"),
+		},
 		CORS: CORSConfig{
 			Origins: origins,
 		},
@@ -191,6 +204,12 @@ func Load() (*Config, error) {
 	}
 	if cfg.JWT.Secret == "" {
 		return nil, fmt.Errorf("JWT_SECRET is required")
+	}
+	if len(cfg.JWT.Secret) < 32 {
+		return nil, fmt.Errorf("JWT_SECRET must be at least 32 characters long")
+	}
+	if cfg.JWT.Secret == "change-me-in-production-use-random-32-chars" {
+		return nil, fmt.Errorf("JWT_SECRET is set to the example value — generate a secure random secret before running in production")
 	}
 
 	return cfg, nil

@@ -5,6 +5,7 @@ import '../models/holding_model.dart';
 import '../models/investment_transaction_model.dart';
 import '../models/custom_asset_model.dart';
 import '../models/asset_model.dart';
+import '../models/currency_quote_model.dart';
 
 class InvestmentRepository {
   final Dio _dio;
@@ -107,6 +108,17 @@ class InvestmentRepository {
         .toList();
   }
 
+  // ---- Currency quotes ----
+
+  Future<List<CurrencyQuoteModel>> getCurrencyQuotes() async {
+    final response = await _dio.get('/quotes/currencies');
+    final body = response.data as Map<String, dynamic>;
+    final dataList = (body['data'] as List<dynamic>?) ?? [];
+    return dataList
+        .map((e) => CurrencyQuoteModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   // ---- Custom Assets ----
 
   Future<List<CustomAssetModel>> listCustomAssets() async {
@@ -134,5 +146,18 @@ class InvestmentRepository {
 
   Future<void> deleteCustomAsset(String id) async {
     await _dio.delete('/custom-assets/$id');
+  }
+
+  Future<Map<String, dynamic>> getTaxReport(int year) async {
+    final response = await _dio.get('/investments/tax-report',
+        queryParameters: {'year': year});
+    final body = response.data as Map<String, dynamic>;
+    return body['data'] as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getPortfolioPerformance() async {
+    final response = await _dio.get('/investments/performance');
+    final body = response.data as Map<String, dynamic>;
+    return body['data'] as Map<String, dynamic>;
   }
 }

@@ -64,8 +64,8 @@ class _PortfolioAnalysisScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Benchmark comparison (mock)
-                        _BenchmarkCard(),
+                        // Benchmark comparison (real portfolio return vs estimates)
+                        _BenchmarkCard(state: state),
                         const SizedBox(height: 16),
 
                         // Diversification pie chart
@@ -85,9 +85,40 @@ class _PortfolioAnalysisScreenState
   }
 }
 
-class _BenchmarkCard extends StatelessWidget {
+class _BenchmarkCard extends ConsumerStatefulWidget {
+  final InvestmentsState state;
+  const _BenchmarkCard({required this.state});
+
+  @override
+  ConsumerState<_BenchmarkCard> createState() => _BenchmarkCardState();
+}
+
+class _BenchmarkCardState extends ConsumerState<_BenchmarkCard> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+        () => ref.read(investmentsProvider.notifier).loadPortfolioPerformance());
+  }
+
   @override
   Widget build(BuildContext context) {
+    final perf = widget.state.portfolioPerformance;
+    final pct = NumberFormat('+0.##%;-0.##%', 'pt_BR');
+
+    final portfolioReturn = perf != null
+        ? pct.format((perf['return_pct'] as num? ?? 0) / 100)
+        : '—';
+    final cdiRate = perf != null
+        ? '+${(perf['cdi_estimate_pct'] as num? ?? 0).toStringAsFixed(2)}%'
+        : '—';
+    final ibovRate = perf != null
+        ? '+${(perf['ibov_estimate_pct'] as num? ?? 0).toStringAsFixed(2)}%'
+        : '—';
+
+    final returnPct = (perf?['return_pct'] as num?)?.toDouble() ?? 0;
+    final cdiEstimate = (perf?['cdi_estimate_pct'] as num?)?.toDouble() ?? 0;
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -95,41 +126,60 @@ class _BenchmarkCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Comparativo de Mercado',
-                style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text('Rentabilidade vs Benchmarks',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _BenchmarkItem(
-                    name: 'IBOV',
-                    value: '+12,5%',
-                    period: 'no ano',
-                    color: const Color(0xFF22C55E),
+                    name: 'Sua Carteira',
+                    value: portfolioReturn,
+                    period: 'total',
+                    color: returnPct >= 0
+                        ? const Color(0xFF22C55E)
+                        : Colors.red,
                   ),
                 ),
                 Expanded(
                   child: _BenchmarkItem(
                     name: 'CDI',
-                    value: '+13,75%',
-                    period: 'a.a.',
+                    value: cdiRate,
+                    period: 'a.a. est.',
                     color: const Color(0xFF3B82F6),
                   ),
                 ),
                 Expanded(
                   child: _BenchmarkItem(
-                    name: 'IPCA',
-                    value: '+4,83%',
-                    period: 'acum. 12m',
+                    name: 'IBOV',
+                    value: ibovRate,
+                    period: 'a.a. est.',
                     color: const Color(0xFFF59E0B),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            if (perf != null && returnPct > 0) ...[
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: (returnPct / (cdiEstimate > 0 ? cdiEstimate * 2 : 20))
+                    .clamp(0.0, 1.0),
+                color: returnPct >= cdiEstimate ? Colors.green : Colors.orange,
+                backgroundColor: Colors.grey.shade200,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                returnPct >= cdiEstimate
+                    ? '✓ Sua carteira está batendo o CDI'
+                    : '⚠ Sua carteira está abaixo do CDI',
+                style: TextStyle(
+                    fontSize: 12,
+                    color: returnPct >= cdiEstimate ? Colors.green : Colors.orange),
+              ),
+            ],
+            const SizedBox(height: 4),
             const Text(
-              '* Dados ilustrativos. Integração com cotações em tempo real disponível em breve.',
+              'CDI e IBOV são estimativas. Rentabilidade da carteira calculada sobre custo médio atual.',
               style: TextStyle(fontSize: 11, color: Colors.grey),
             ),
           ],

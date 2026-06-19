@@ -102,6 +102,10 @@ class _DashboardBody extends ConsumerWidget {
           SliverToBoxAdapter(
             child: _NetBalanceCard(overview: overview),
           ),
+          // Net Worth + Investment Capacity cards
+          SliverToBoxAdapter(
+            child: _NetWorthAndCapacityRow(overview: overview, patrimonyHistory: dashState.patrimonyHistory),
+          ),
           // Month selector
           SliverToBoxAdapter(
             child: _MonthSelector(
@@ -326,6 +330,131 @@ class _BalanceStat extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+// ------ Net Worth + Investment Capacity Row ------
+
+class _NetWorthAndCapacityRow extends StatelessWidget {
+  const _NetWorthAndCapacityRow({required this.overview, required this.patrimonyHistory});
+  final DashboardOverview? overview;
+  final List<PatrimonySnapshotModel> patrimonyHistory;
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final netWorth = overview?.totalNetWorth ?? 0.0;
+    final investValue = overview?.investmentValue ?? 0.0;
+    final customValue = overview?.customAssetValue ?? 0.0;
+    final capacity = overview?.investmentCapacity ?? 0.0;
+    final capacityPct = overview?.investmentCapacityPct ?? 0.0;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Patrimônio total card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Patrimônio Total',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 4),
+                Text(fmt.format(netWorth),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    _PatrimonyChip(
+                        label: 'Investimentos', value: fmt.format(investValue),
+                        color: Colors.blue),
+                    const SizedBox(width: 8),
+                    _PatrimonyChip(
+                        label: 'Outros ativos', value: fmt.format(customValue),
+                        color: Colors.purple),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Investment capacity card
+          if (capacity > 0)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.trending_up, color: Colors.green.shade700, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Capacidade de Investir este mês',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.green.shade700)),
+                        Text(fmt.format(capacity),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade800)),
+                        Text(
+                            '${capacityPct.toStringAsFixed(1)}% da sua renda mensal',
+                            style: TextStyle(
+                                fontSize: 11, color: Colors.green.shade600)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PatrimonyChip extends StatelessWidget {
+  const _PatrimonyChip(
+      {required this.label, required this.value, required this.color});
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: TextStyle(fontSize: 10, color: color)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+        ],
+      ),
     );
   }
 }

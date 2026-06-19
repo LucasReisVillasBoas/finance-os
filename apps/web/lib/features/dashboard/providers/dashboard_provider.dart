@@ -5,6 +5,7 @@ import '../repositories/dashboard_repository.dart';
 class DashboardState {
   final DashboardOverview? overview;
   final List<MonthlyCashflowModel> cashflow;
+  final List<PatrimonySnapshotModel> patrimonyHistory;
   final bool isLoading;
   final String? error;
   final int month;
@@ -13,6 +14,7 @@ class DashboardState {
   const DashboardState({
     this.overview,
     this.cashflow = const [],
+    this.patrimonyHistory = const [],
     this.isLoading = false,
     this.error,
     required this.month,
@@ -22,6 +24,7 @@ class DashboardState {
   DashboardState copyWith({
     DashboardOverview? overview,
     List<MonthlyCashflowModel>? cashflow,
+    List<PatrimonySnapshotModel>? patrimonyHistory,
     bool? isLoading,
     String? error,
     bool clearError = false,
@@ -31,6 +34,7 @@ class DashboardState {
       DashboardState(
         overview: overview ?? this.overview,
         cashflow: cashflow ?? this.cashflow,
+        patrimonyHistory: patrimonyHistory ?? this.patrimonyHistory,
         isLoading: isLoading ?? this.isLoading,
         error: clearError ? null : (error ?? this.error),
         month: month ?? this.month,
@@ -60,10 +64,12 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
       final results = await Future.wait([
         _repo.getOverview(month: m, year: y),
         _repo.getCashflow(),
+        _repo.getPatrimonyHistory(),
       ]);
       state = state.copyWith(
         overview: results[0] as DashboardOverview,
         cashflow: results[1] as List<MonthlyCashflowModel>,
+        patrimonyHistory: results[2] as List<PatrimonySnapshotModel>,
         isLoading: false,
       );
     } catch (e) {
