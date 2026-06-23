@@ -35,32 +35,39 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
         title: const Text('Novo portfólio'),
         content: Form(
           key: formKey,
-          child: TextFormField(
-            controller: nameController,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Nome do portfólio',
-              hintText: 'Ex: Renda Variável',
-              border: OutlineInputBorder(),
-            ),
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Informe um nome' : null,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: nameController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: 'Nome do portfólio',
+                  hintText: 'Ex: Renda Variável',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Informe um nome' : null,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(true);
+                  }
+                },
+                child: const Text('Criar'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text('Cancelar'),
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(ctx).pop(true);
-              }
-            },
-            child: const Text('Criar'),
-          ),
-        ],
+        actionsPadding: EdgeInsets.zero,
       ),
     );
 
@@ -149,6 +156,19 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                           _CurrencyQuotesCard(quotes: state.currencyQuotes),
                           const SizedBox(height: 16),
                         ],
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () =>
+                                context.push('/investments/custom/new'),
+                            icon: const Icon(Icons.add_business_outlined),
+                            label: const Text('Novo ativo personalizado'),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         // Allocation pie chart
                         if (state.holdings.isNotEmpty) ...[
                           _AllocationChart(holdings: state.holdings),
@@ -205,11 +225,6 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                     ),
                   ),
                 ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/investments/custom/new'),
-        icon: const Icon(Icons.add_business),
-        label: const Text('Ativo personalizado'),
-      ),
     );
   }
 }

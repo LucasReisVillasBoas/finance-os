@@ -108,6 +108,27 @@ class _CategoryList extends ConsumerWidget {
   }
 }
 
+// Maps the icon name stored on system categories to the Material IconData.
+// User-created categories store an emoji glyph instead and fall through to
+// the Text branch in [_CategoryTile.build].
+const Map<String, IconData> _categoryMaterialIcons = {
+  'restaurant': Icons.restaurant,
+  'directions_car': Icons.directions_car,
+  'home': Icons.home,
+  'local_hospital': Icons.local_hospital,
+  'school': Icons.school,
+  'sports_esports': Icons.sports_esports,
+  'checkroom': Icons.checkroom,
+  'devices': Icons.devices,
+  'subscriptions': Icons.subscriptions,
+  'more_horiz': Icons.more_horiz,
+  'work': Icons.work,
+  'laptop': Icons.laptop,
+  'trending_up': Icons.trending_up,
+  'house': Icons.house,
+  'attach_money': Icons.attach_money,
+};
+
 class _CategoryTile extends ConsumerWidget {
   final CategoryModel category;
 
@@ -125,6 +146,24 @@ class _CategoryTile extends ConsumerWidget {
     }
   }
 
+  Widget _buildAvatarChild(Color color) {
+    final raw = category.icon;
+    if (raw != null) {
+      final iconData = _categoryMaterialIcons[raw];
+      if (iconData != null) {
+        return Icon(iconData, color: color, size: 20);
+      }
+      // Likely an emoji or short glyph chosen by the user.
+      if (raw.characters.length <= 2) {
+        return Text(raw, style: const TextStyle(fontSize: 18));
+      }
+    }
+    return Text(
+      (category.name.isNotEmpty ? category.name[0] : '?').toUpperCase(),
+      style: TextStyle(color: color, fontWeight: FontWeight.w600),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = _parseColor(context);
@@ -134,10 +173,7 @@ class _CategoryTile extends ConsumerWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: color.withValues(alpha: 0.15),
-          child: Text(
-            category.icon ?? category.name[0].toUpperCase(),
-            style: TextStyle(color: color),
-          ),
+          child: _buildAvatarChild(color),
         ),
         title: Text(category.name),
         trailing: Row(

@@ -79,18 +79,26 @@ class _TaxReportScreenState extends ConsumerState<TaxReportScreen> {
                                     .format(state.taxReport!['total_tax_due'] ?? 0),
                                 color: Colors.red,
                               ),
-                              const Divider(),
                               Container(
+                                margin: const EdgeInsets.only(top: 12),
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.shade50,
+                                  color: theme.colorScheme.primary
+                                      .withValues(alpha: 0.08),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.amber.shade200),
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary
+                                        .withValues(alpha: 0.25),
+                                  ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '⚠️ Valores estimados com base no preço médio atual. '
                                   'Consulte um contador para declaração oficial.',
-                                  style: TextStyle(fontSize: 12),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.85),
+                                  ),
                                 ),
                               ),
                             ],

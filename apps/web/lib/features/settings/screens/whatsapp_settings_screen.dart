@@ -273,6 +273,7 @@ class _CommandRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -281,16 +282,19 @@ class _CommandRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.4),
+              ),
             ),
             child: Text(
               command,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'monospace',
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -298,7 +302,10 @@ class _CommandRow extends StatelessWidget {
           Expanded(
             child: Text(
               description,
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
           ),
         ],
@@ -326,7 +333,24 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isUser = message.isIncoming;
+
+    final Color bg;
+    final Color fg;
+    if (isUser) {
+      bg = isDark
+          ? const Color(0xFF1E4D2B)
+          : Colors.green.shade100;
+      fg = isDark ? Colors.white : Colors.black87;
+    } else {
+      bg = isDark
+          ? theme.colorScheme.surfaceContainerHighest
+          : Colors.grey.shade100;
+      fg = theme.colorScheme.onSurface;
+    }
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -336,12 +360,12 @@ class _MessageBubble extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.7,
         ),
         decoration: BoxDecoration(
-          color: isUser ? Colors.green.shade100 : Colors.grey.shade100,
+          color: bg,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           message.text,
-          style: const TextStyle(fontSize: 13),
+          style: TextStyle(fontSize: 13, color: fg),
         ),
       ),
     );
