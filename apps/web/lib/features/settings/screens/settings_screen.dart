@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/providers/theme_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -9,6 +10,10 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações')),
@@ -26,6 +31,17 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(indent: 56),
           // Preferences section
           _SectionHeader(title: 'Preferências'),
+          SwitchListTile(
+            secondary: Icon(
+              isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+            ),
+            title: const Text('Tema escuro'),
+            subtitle: Text(isDark ? 'Ativado' : 'Desativado'),
+            value: isDark,
+            onChanged: (v) =>
+                ref.read(themeModeProvider.notifier).toggleDark(v),
+          ),
+          const Divider(indent: 56),
           ListTile(
             leading: const Icon(Icons.notifications_outlined),
             title: const Text('Notificações'),
