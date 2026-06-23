@@ -122,12 +122,7 @@ class SettingsScreen extends ConsumerWidget {
           // Logout button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade50,
-                foregroundColor: Colors.red,
-                side: BorderSide(color: Colors.red.shade200),
-              ),
+            child: OutlinedButton.icon(
               icon: const Icon(Icons.logout),
               label: const Text('Sair'),
               onPressed: () async {
