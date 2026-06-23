@@ -16,7 +16,7 @@
 | IA | Claude API (chat, forecast, categorização automática) | ✅ (requer `ANTHROPIC_API_KEY`) |
 | WhatsApp | Evolution API (opcional) | ✅ |
 | Infra | Docker Compose (dev + prod), Nginx, Makefile | ✅ Deploy local |
-| Mobile (Android/iOS) | — | ❌ Não iniciado |
+| Mobile (Android/iOS) | Flutter (mesmo projeto, pastas `android/` e `ios/` geradas) | 🔄 Iniciado — falta validar em emulador e assinar |
 | CI/CD | — | ❌ Não existe |
 
 ---
@@ -106,6 +106,13 @@ A auditoria de dependências não encontrou nenhum bloqueador:
 O app é um único projeto Flutter: **não crie outro app** — apenas adicione as plataformas à pasta `apps/web` (vale considerar renomeá-la para `apps/app` no futuro, já que deixará de ser só web).
 
 ### Passo a passo (ordem recomendada)
+
+> **Atualização 2026-06-13:** os passos 1–3 já foram executados neste repositório:
+> pastas `android/` e `ios/` criadas, base URL por plataforma em `api_client.dart`
+> (web/iOS → `localhost`, emulador Android → `10.0.2.2`, release → `--dart-define`),
+> `applicationId`/bundle ID definidos como `com.financeos.app`, permissão INTERNET,
+> cleartext HTTP somente em debug (Android) e exceção ATS de rede local (iOS).
+> Continue do **Passo 4** (validar em emulador).
 
 **Passo 1 — Adicionar as plataformas (5 min):**
 ```bash

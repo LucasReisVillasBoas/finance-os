@@ -237,7 +237,7 @@ class _InvestmentFormScreenState extends ConsumerState<InvestmentFormScreen> {
                     style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 DropdownButtonFormField<String>(
-                  value: _holdingType,
+                  initialValue: _holdingType,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
