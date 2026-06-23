@@ -54,6 +54,32 @@ func (h *DashboardHandler) GetOverview(c *gin.Context) {
 	})
 }
 
+// GetPatrimonyHistory returns the 12-month cumulative patrimony history.
+//
+//	@Summary		Evolução patrimonial (12 meses)
+//	@Tags			Dashboard
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200
+//	@Router			/dashboard/patrimony [get]
+func (h *DashboardHandler) GetPatrimonyHistory(c *gin.Context) {
+	userIDStr := c.GetString("user_id")
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": gin.H{"code": "UNAUTHORIZED", "message": "invalid user id"}})
+		return
+	}
+
+	history, err := h.usecase.GetPatrimonyHistory(c.Request.Context(), userID)
+	if err != nil {
+		h.logger.Error("dashboard patrimony history", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": gin.H{"code": "INTERNAL_ERROR", "message": "internal error"}})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": history, "meta": gin.H{"months": 12}})
+}
+
 // GetCashflow returns the last 12 months cashflow data.
 //
 //	@Summary		Cashflow dos últimos 12 meses

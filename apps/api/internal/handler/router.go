@@ -10,6 +10,7 @@ import (
 	"github.com/financeos/api/pkg/brapi"
 	"github.com/financeos/api/pkg/claude"
 	"github.com/financeos/api/pkg/config"
+	"github.com/financeos/api/pkg/currency"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -98,9 +99,16 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	investTxRepo := repository.NewInvestmentTransactionRepository(db)
 	assetRepo := repository.NewAssetRepository(db)
 	customAssetRepo := repository.NewCustomAssetRepository(db)
-	brapiSvc := brapi.NewBrapiService()
+	brapiSvc := brapi.NewBrapiService(cfg.Brapi.Token)
 	investmentUC := usecase.NewInvestmentUseCase(portfolioRepo, holdingRepo, investTxRepo, assetRepo, customAssetRepo, brapiSvc, rdb)
 	investmentH := NewInvestmentHandler(investmentUC, logger)
+
+	// Wire optional dependencies for investment usecase (D3 dividends + D6 concentration alerts)
+	investmentUC.WithTransactionRepo(transactionRepo)
+	// notificationUC wired after it is created below
+
+	currencySvc := currency.NewService()
+	quoteH := NewQuoteHandler(currencySvc, rdb, logger)
 
 	goalRepo := repository.NewGoalRepository(db)
 	goalUC := usecase.NewGoalUseCase(goalRepo)
@@ -120,6 +128,7 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	notificationRepo := repository.NewNotificationRepository(db)
 	notificationUC := usecase.NewNotificationUseCase(notificationRepo)
 	notificationH := NewNotificationHandler(notificationUC, logger)
+	investmentUC.WithNotificationUC(notificationUC)
 
 	familyRepo := repository.NewFamilyRepository(db)
 	familyUC := usecase.NewFamilyUseCase(familyRepo)
@@ -131,10 +140,22 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 	// Public auth routes
 	auth := v1.Group("/auth")
 	{
-		auth.POST("/register", authH.Register)
-		auth.POST("/login", authH.Login)
+		auth.POST("/register", middleware.RateLimit(rdb, middleware.RateLimitConfig{
+			MaxAttempts: 5,
+			Window:      time.Hour,
+			KeyPrefix:   "register",
+		}), authH.Register)
+		auth.POST("/login", middleware.RateLimit(rdb, middleware.RateLimitConfig{
+			MaxAttempts: 10,
+			Window:      15 * time.Minute,
+			KeyPrefix:   "login",
+		}), authH.Login)
 		auth.POST("/refresh", authH.Refresh)
-		auth.POST("/forgot-password", authH.ForgotPassword)
+		auth.POST("/forgot-password", middleware.RateLimit(rdb, middleware.RateLimitConfig{
+			MaxAttempts: 3,
+			Window:      time.Hour,
+			KeyPrefix:   "forgot-password",
+		}), authH.ForgotPassword)
 		auth.POST("/reset-password", authH.ResetPassword)
 	}
 
@@ -184,6 +205,7 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		// Dashboard
 		protected.GET("/dashboard/overview", dashboardH.GetOverview)
 		protected.GET("/dashboard/cashflow", dashboardH.GetCashflow)
+		protected.GET("/dashboard/patrimony", dashboardH.GetPatrimonyHistory)
 
 		// Investments — Portfolios
 		protected.GET("/portfolios", investmentH.ListPortfolios)
@@ -202,8 +224,15 @@ func SetupRouter(cfg *config.Config, db *pgxpool.Pool, rdb *redis.Client, logger
 		// Investments — Transactions
 		protected.DELETE("/investment-transactions/:id", investmentH.DeleteInvestmentTransaction)
 
+		// Investment performance and tax report
+		protected.GET("/investments/performance", investmentH.GetPortfolioPerformance)
+		protected.GET("/investments/tax-report", investmentH.GetTaxReport)
+
 		// Assets
 		protected.GET("/assets/search", investmentH.SearchAssets)
+
+		// Market quotes (currencies — USD, EUR)
+		protected.GET("/quotes/currencies", quoteH.GetCurrencyQuotes)
 
 		// Custom Assets
 		protected.GET("/custom-assets", investmentH.ListCustomAssets)

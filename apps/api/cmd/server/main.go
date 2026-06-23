@@ -86,7 +86,7 @@ func main() {
 	// Start price worker
 	assetRepo := repository.NewAssetRepository(db)
 	holdingRepo := repository.NewHoldingRepository(db)
-	brapiSvc := brapi.NewBrapiService()
+	brapiSvc := brapi.NewBrapiService(cfg.Brapi.Token)
 	priceWorker := worker.NewPriceWorker(assetRepo, holdingRepo, log, brapiSvc)
 	go priceWorker.Run(workerCtx)
 	log.Info("price worker started")

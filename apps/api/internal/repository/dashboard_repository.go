@@ -44,6 +44,27 @@ func (r *dashboardRepository) GetOverview(ctx context.Context, userID uuid.UUID,
 		return nil, fmt.Errorf("dashboardRepository.GetOverview total_patrimony: %w", err)
 	}
 
+	// Investment value: current market value of all holdings across user's portfolios
+	if err := r.db.QueryRow(ctx, `
+		SELECT COALESCE(SUM(h.current_value), 0)
+		FROM holdings h
+		JOIN portfolios p ON p.id = h.portfolio_id
+		WHERE p.user_id = $1
+	`, userID).Scan(&overview.InvestmentValue); err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetOverview investment_value: %w", err)
+	}
+
+	// Custom asset value: sum of active custom assets (real estate, vehicles, etc.)
+	if err := r.db.QueryRow(ctx, `
+		SELECT COALESCE(SUM(current_value), 0)
+		FROM custom_assets
+		WHERE user_id = $1 AND is_active = true
+	`, userID).Scan(&overview.CustomAssetValue); err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetOverview custom_asset_value: %w", err)
+	}
+
+	overview.TotalNetWorth = overview.NetBalance + overview.InvestmentValue + overview.CustomAssetValue
+
 	// Total income and expense for the month
 	if err := r.db.QueryRow(ctx, `
 		SELECT
@@ -53,6 +74,14 @@ func (r *dashboardRepository) GetOverview(ctx context.Context, userID uuid.UUID,
 		WHERE user_id = $1 AND date >= $2 AND date <= $3 AND type != 'transfer'
 	`, userID, startDate, endDate).Scan(&overview.TotalIncome, &overview.TotalExpense); err != nil {
 		return nil, fmt.Errorf("dashboardRepository.GetOverview income_expense: %w", err)
+	}
+
+	// Investment capacity: how much is left to invest this month
+	if overview.TotalIncome > overview.TotalExpense {
+		overview.InvestmentCapacity = overview.TotalIncome - overview.TotalExpense
+	}
+	if overview.TotalIncome > 0 {
+		overview.InvestmentCapacityPct = (overview.InvestmentCapacity / overview.TotalIncome) * 100
 	}
 
 	// Top 5 expense categories for the month
@@ -226,6 +255,92 @@ func (r *dashboardRepository) GetCashflow(ctx context.Context, userID uuid.UUID,
 	}
 	if result == nil {
 		result = []domainrepo.MonthlyCashflow{}
+	}
+	return result, nil
+}
+
+func (r *dashboardRepository) GetPatrimonyHistory(ctx context.Context, userID uuid.UUID, months int) ([]domainrepo.PatrimonySnapshot, error) {
+	now := time.Now()
+	startDate := time.Date(now.Year(), now.Month()-time.Month(months-1), 1, 0, 0, 0, 0, time.UTC)
+	monthNames := []string{"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"}
+
+	// Monthly net savings (income - expense) per month
+	savingsRows, err := r.db.Query(ctx, `
+		SELECT
+			EXTRACT(YEAR FROM date)::int  AS year,
+			EXTRACT(MONTH FROM date)::int AS month,
+			COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END), 0) AS net_savings
+		FROM transactions
+		WHERE user_id = $1 AND date >= $2 AND type != 'transfer'
+		GROUP BY year, month
+		ORDER BY year ASC, month ASC
+	`, userID, startDate)
+	if err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory savings query: %w", err)
+	}
+	defer savingsRows.Close()
+
+	type monthKey struct{ Year, Month int }
+	savings := map[monthKey]float64{}
+	for savingsRows.Next() {
+		var yr, mo int
+		var net float64
+		if err := savingsRows.Scan(&yr, &mo, &net); err != nil {
+			return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory savings scan: %w", err)
+		}
+		savings[monthKey{yr, mo}] = net
+	}
+	if err := savingsRows.Err(); err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory savings rows: %w", err)
+	}
+
+	// Monthly invested capital (buys - sells) per month
+	investRows, err := r.db.Query(ctx, `
+		SELECT
+			EXTRACT(YEAR FROM it.date)::int  AS year,
+			EXTRACT(MONTH FROM it.date)::int AS month,
+			COALESCE(SUM(CASE WHEN it.type = 'buy' THEN it.total ELSE -it.total END), 0) AS invested
+		FROM investment_transactions it
+		JOIN holdings h ON h.id = it.holding_id
+		JOIN portfolios p ON p.id = h.portfolio_id
+		WHERE p.user_id = $1 AND it.date >= $2 AND it.type IN ('buy','sell')
+		GROUP BY year, month
+		ORDER BY year ASC, month ASC
+	`, userID, startDate)
+	if err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory invest query: %w", err)
+	}
+	defer investRows.Close()
+
+	invested := map[monthKey]float64{}
+	for investRows.Next() {
+		var yr, mo int
+		var inv float64
+		if err := investRows.Scan(&yr, &mo, &inv); err != nil {
+			return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory invest scan: %w", err)
+		}
+		invested[monthKey{yr, mo}] = inv
+	}
+	if err := investRows.Err(); err != nil {
+		return nil, fmt.Errorf("dashboardRepository.GetPatrimonyHistory invest rows: %w", err)
+	}
+
+	// Build cumulative snapshots for each of the past `months` months
+	result := make([]domainrepo.PatrimonySnapshot, 0, months)
+	var cumSavings, cumInvested float64
+	for i := months - 1; i >= 0; i-- {
+		t := time.Date(now.Year(), now.Month()-time.Month(i), 1, 0, 0, 0, 0, time.UTC)
+		key := monthKey{t.Year(), int(t.Month())}
+		cumSavings += savings[key]
+		cumInvested += invested[key]
+		result = append(result, domainrepo.PatrimonySnapshot{
+			Month:         int(t.Month()),
+			Year:          t.Year(),
+			Label:         fmt.Sprintf("%s/%02d", monthNames[int(t.Month())-1], t.Year()%100),
+			BankSavings:   cumSavings,
+			InvestedTotal: cumInvested,
+			TotalNetWorth: cumSavings + cumInvested,
+		})
 	}
 	return result, nil
 }

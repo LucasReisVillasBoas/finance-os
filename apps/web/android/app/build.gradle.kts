@@ -15,7 +15,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.financeos.app"
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.financeos.financeos_web"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -26,9 +27,8 @@ android {
 
     buildTypes {
         release {
-            // Assinado com a chave de debug até existir keystore própria,
-            // para que `flutter run --release` funcione. Antes de publicar na
-            // Play Store, configure signingConfigs com a keystore de release.
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }

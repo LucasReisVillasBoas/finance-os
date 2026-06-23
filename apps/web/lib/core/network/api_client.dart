@@ -2,18 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'base_url.dart';
 
-const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
+const _envUrl = String.fromEnvironment('API_BASE_URL');
 
-// Em release, sempre builde com --dart-define=API_BASE_URL=https://...
-// O emulador Android acessa o host da máquina via 10.0.2.2.
-String get _baseUrl {
-  if (_envBaseUrl.isNotEmpty) return _envBaseUrl;
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    return 'http://10.0.2.2:8000';
-  }
-  return 'http://localhost:8000';
-}
+// Resolves the API base URL at runtime:
+//   1. If API_BASE_URL was provided at build time (--dart-define), use it.
+//   2. Otherwise fall back to a platform-aware default so Android emulators
+//      reach the host machine via 10.0.2.2 instead of the loopback address.
+String get _baseUrl => _envUrl.isNotEmpty ? _envUrl : getDefaultBaseUrl();
 
 const _storage = FlutterSecureStorage();
 

@@ -26,11 +26,11 @@ func (r *goalRepository) Create(ctx context.Context, g *entity.Goal) error {
 	query := `
 		INSERT INTO goals (
 			id, user_id, name, target_amount, current_amount, target_date,
-			monthly_contribution, icon, color, is_achieved, created_at, updated_at
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+			monthly_contribution, icon, color, is_achieved, portfolio_id, created_at, updated_at
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
 	_, err := r.db.Exec(ctx, query,
 		g.ID, g.UserID, g.Name, g.TargetAmount, g.CurrentAmount, g.TargetDate,
-		g.MonthlyContribution, g.Icon, g.Color, g.IsAchieved, g.CreatedAt, g.UpdatedAt,
+		g.MonthlyContribution, g.Icon, g.Color, g.IsAchieved, g.PortfolioID, g.CreatedAt, g.UpdatedAt,
 	)
 	if err != nil {
 		return fmt.Errorf("goalRepository.Create: %w", err)
@@ -41,7 +41,7 @@ func (r *goalRepository) Create(ctx context.Context, g *entity.Goal) error {
 func (r *goalRepository) FindByID(ctx context.Context, id, userID uuid.UUID) (*entity.Goal, error) {
 	query := `
 		SELECT id, user_id, name, target_amount, current_amount, target_date,
-			monthly_contribution, icon, color, is_achieved, created_at, updated_at
+			monthly_contribution, icon, color, is_achieved, portfolio_id, created_at, updated_at
 		FROM goals
 		WHERE id = $1 AND user_id = $2`
 	row := r.db.QueryRow(ctx, query, id, userID)
@@ -58,7 +58,7 @@ func (r *goalRepository) FindByID(ctx context.Context, id, userID uuid.UUID) (*e
 func (r *goalRepository) FindByUserID(ctx context.Context, userID uuid.UUID) ([]*entity.Goal, error) {
 	query := `
 		SELECT id, user_id, name, target_amount, current_amount, target_date,
-			monthly_contribution, icon, color, is_achieved, created_at, updated_at
+			monthly_contribution, icon, color, is_achieved, portfolio_id, created_at, updated_at
 		FROM goals
 		WHERE user_id = $1
 		ORDER BY created_at DESC`
@@ -90,11 +90,11 @@ func (r *goalRepository) Update(ctx context.Context, g *entity.Goal) error {
 		UPDATE goals SET
 			name = $3, target_amount = $4, current_amount = $5, target_date = $6,
 			monthly_contribution = $7, icon = $8, color = $9, is_achieved = $10,
-			updated_at = $11
+			portfolio_id = $11, updated_at = $12
 		WHERE id = $1 AND user_id = $2`
 	_, err := r.db.Exec(ctx, query,
 		g.ID, g.UserID, g.Name, g.TargetAmount, g.CurrentAmount, g.TargetDate,
-		g.MonthlyContribution, g.Icon, g.Color, g.IsAchieved, time.Now(),
+		g.MonthlyContribution, g.Icon, g.Color, g.IsAchieved, g.PortfolioID, time.Now(),
 	)
 	if err != nil {
 		return fmt.Errorf("goalRepository.Update: %w", err)
@@ -177,7 +177,7 @@ func scanGoal(row pgx.Row) (*entity.Goal, error) {
 	g := &entity.Goal{}
 	err := row.Scan(
 		&g.ID, &g.UserID, &g.Name, &g.TargetAmount, &g.CurrentAmount, &g.TargetDate,
-		&g.MonthlyContribution, &g.Icon, &g.Color, &g.IsAchieved, &g.CreatedAt, &g.UpdatedAt,
+		&g.MonthlyContribution, &g.Icon, &g.Color, &g.IsAchieved, &g.PortfolioID, &g.CreatedAt, &g.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err

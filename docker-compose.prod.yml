@@ -33,6 +33,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       EVOLUTION_API_URL: ${EVOLUTION_API_URL:-}
       EVOLUTION_API_KEY: ${EVOLUTION_API_KEY:-}
+      BRAPI_TOKEN: ${BRAPI_TOKEN:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
       APP_ENV: production
       APP_PORT: "8000"
