@@ -17,6 +17,11 @@ const _storage = FlutterSecureStorage();
 /// Global navigator key for showing SnackBars outside widget tree.
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+/// Invoked when the interceptor gives up on a 401 (refresh failed or unavailable).
+/// The auth provider wires this up so it can clear its own state and let the
+/// router redirect to /login.
+void Function()? onUnauthorized;
+
 void _showSnackBar(String message, {bool isError = true}) {
   final context = navigatorKey.currentContext;
   if (context != null) {
@@ -28,6 +33,51 @@ void _showSnackBar(String message, {bool isError = true}) {
     );
   }
 }
+
+// Shared in-flight refresh — prevents N concurrent 401s from triggering N
+// refreshes (which would rotate the refresh_token N times and break it).
+Future<String?>? _refreshInFlight;
+
+Future<String?> _refreshAccessToken(Dio originalDio) {
+  return _refreshInFlight ??= _doRefresh(originalDio).whenComplete(() {
+    _refreshInFlight = null;
+  });
+}
+
+Future<String?> _doRefresh(Dio originalDio) async {
+  final refreshToken = await _storage.read(key: 'refresh_token');
+  if (refreshToken == null) return null;
+  // Bare Dio so the refresh call doesn't recurse through our interceptor.
+  final bare = Dio(BaseOptions(
+    baseUrl: originalDio.options.baseUrl,
+    connectTimeout: originalDio.options.connectTimeout,
+    receiveTimeout: originalDio.options.receiveTimeout,
+    headers: {'Content-Type': 'application/json'},
+  ));
+  try {
+    final resp = await bare.post('/auth/refresh', data: {'refresh_token': refreshToken});
+    final data = (resp.data as Map<String, dynamic>)['data'] as Map<String, dynamic>;
+    final newAccess = data['access_token'] as String;
+    final newRefresh = data['refresh_token'] as String;
+    await Future.wait([
+      _storage.write(key: 'access_token', value: newAccess),
+      _storage.write(key: 'refresh_token', value: newRefresh),
+    ]);
+    return newAccess;
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<void> _clearTokens() => Future.wait([
+      _storage.delete(key: 'access_token'),
+      _storage.delete(key: 'refresh_token'),
+    ]);
+
+bool _isAuthEndpoint(String path) =>
+    path.contains('/auth/login') ||
+    path.contains('/auth/refresh') ||
+    path.contains('/auth/register');
 
 Dio createDio() {
   final dio = Dio(
@@ -51,19 +101,42 @@ Dio createDio() {
           }
         } catch (_) {
           // Storage read failed or timed out — proceed without token.
-          // API will return 401 which is handled below.
         }
         handler.next(options);
       },
       onResponse: (response, handler) {
         handler.next(response);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
         final statusCode = error.response?.statusCode;
+        final requestOptions = error.requestOptions;
+        final isAuthEndpoint = _isAuthEndpoint(requestOptions.path);
+        final alreadyRetried = requestOptions.extra['_retriedAfterRefresh'] == true;
+
+        if (statusCode == 401 && !isAuthEndpoint && !alreadyRetried) {
+          final newToken = await _refreshAccessToken(dio);
+          if (newToken != null) {
+            requestOptions.headers['Authorization'] = 'Bearer $newToken';
+            requestOptions.extra['_retriedAfterRefresh'] = true;
+            try {
+              final retryResp = await dio.fetch(requestOptions);
+              return handler.resolve(retryResp);
+            } on DioException catch (e) {
+              return handler.next(e);
+            }
+          }
+          await _clearTokens();
+          onUnauthorized?.call();
+          return handler.next(error);
+        }
+
         if (statusCode == 401) {
-          _storage.delete(key: 'access_token');
-          _storage.delete(key: 'refresh_token');
-        } else if (statusCode == 402) {
+          await _clearTokens();
+          if (!isAuthEndpoint) onUnauthorized?.call();
+          return handler.next(error);
+        }
+
+        if (statusCode == 402) {
           _showSnackBar('Faça upgrade do seu plano para acessar esta funcionalidade');
         } else if (statusCode != null && statusCode >= 400 && statusCode < 500) {
           final errorData = error.response?.data;

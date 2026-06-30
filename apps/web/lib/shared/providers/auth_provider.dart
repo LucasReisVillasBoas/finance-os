@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/network/api_client.dart';
 import '../../features/auth/models/user_model.dart';
 import '../../features/auth/repositories/auth_repository.dart';
 
@@ -33,7 +34,13 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._repo) : super(const AuthState());
+  AuthNotifier(this._repo) : super(const AuthState()) {
+    // Triggered by the API client when a 401 can't be recovered via refresh.
+    // Resetting state lets the router redirect back to /login.
+    onUnauthorized = () {
+      if (mounted) state = const AuthState();
+    };
+  }
 
   final AuthRepository _repo;
 

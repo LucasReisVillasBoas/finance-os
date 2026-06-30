@@ -244,7 +244,8 @@ class _GoalFormScreenState extends ConsumerState<GoalFormScreen> {
 
             // Target date
             ListTile(
-              contentPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              horizontalTitleGap: 12,
               title: Text(
                 _targetDate != null
                     ? 'Data alvo: ${DateFormat('dd/MM/yyyy', 'pt_BR').format(_targetDate!)}'

@@ -321,6 +321,10 @@ class _CurrencyQuotesCard extends StatelessWidget {
     final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     final theme = Theme.of(context);
 
+    final quoteStyle = theme.textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -328,20 +332,18 @@ class _CurrencyQuotesCard extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12,
+        runSpacing: 4,
         children: [
           const Icon(Icons.currency_exchange, size: 14, color: Colors.grey),
-          const SizedBox(width: 6),
-          ...quotes.map((q) => Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Text(
-                  '${q.code}: ${fmt.format(q.bid)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              )),
+          for (final q in quotes)
+            Text(
+              '${q.code}: ${fmt.format(q.bid)}',
+              style: quoteStyle,
+            ),
         ],
       ),
     );

@@ -45,48 +45,42 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
           }
 
           if (state.error != null && state.goals.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(state.error!),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => ref.read(goalsProvider.notifier).load(),
-                    child: const Text('Tentar novamente'),
-                  ),
-                ],
-              ),
+            return _CenteredScrollable(
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(state.error!, textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.read(goalsProvider.notifier).load(),
+                  child: const Text('Tentar novamente'),
+                ),
+              ],
             );
           }
 
           if (state.goals.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.flag_outlined, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Nenhuma meta criada',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Defina objetivos financeiros e acompanhe seu progresso.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () => context.push('/goals/new'),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Criar primeira meta'),
-                  ),
-                ],
-              ),
+            return _CenteredScrollable(
+              children: [
+                const Icon(Icons.flag_outlined, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
+                const Text(
+                  'Nenhuma meta criada',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Defina objetivos financeiros e acompanhe seu progresso.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () => context.push('/goals/new'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Criar primeira meta'),
+                ),
+              ],
             );
           }
 
@@ -321,6 +315,30 @@ class _GoalCard extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Center-aligned empty/error state that gracefully scrolls when the
+/// viewport is shorter than the content (e.g. on small/landscape phones).
+class _CenteredScrollable extends StatelessWidget {
+  const _CenteredScrollable({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight - 48),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: children,
+          ),
         ),
       ),
     );

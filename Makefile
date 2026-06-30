@@ -53,7 +53,7 @@ dev-backend:
 web:
 	cd $(WEB_DIR) && flutter run -d web-server \
 		--web-port 3000 \
-		--web-hostname 0.0.0.0 \
+		--web-hostname localhost \
 		--dart-define=API_BASE_URL=http://localhost:8000
 
 dev-down:
